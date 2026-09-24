@@ -1,0 +1,9 @@
+# Backend lives in a separate repo/deployment — exclude it
+BACK/
+
+# Common
+node_modules/
+.env
+*.log
+.DS_Store
+Thumbs.db

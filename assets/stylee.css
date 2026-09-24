@@ -1,0 +1,2518 @@
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('fonts/proximanova_regular.ttf') format('truetype'); /* Assuming regular is the base */
+    font-weight: 400; /* Regular */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('fonts/proximanova_light.otf') format('opentype');
+    font-weight: 300; /* Light */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('fonts/proximanova_bold.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+/* Uncomment and adjust paths/formats if needed for other weights/styles */
+/*
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('fonts/proximanova_black.otf') format('opentype'),
+         url('fonts/proximanova_black.ttf') format('truetype');
+    font-weight: 900; 
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('fonts/proximanova_extrabold.otf') format('opentype');
+    font-weight: 800; 
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('fonts/proximanova_boldit.otf') format('opentype');
+    font-weight: 700; 
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('fonts/proximanova_blackit.otf') format('opentype');
+    font-weight: 900; 
+    font-style: italic;
+}
+*/
+
+/* General Styles */
+body {
+    font-family: 'Proxima Nova', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    display: flex;
+    /* padding-right: 32px; */
+    width: fit-content;
+    min-height: 550px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #e0e0e0;
+}
+
+/* Left Panel */
+.left-panel {
+    width: fit-content;
+    min-width: fit-content;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-right: 20px;
+    padding-left: 30px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.event-host {
+    color: #1A1A1A9C; /* Gray-500 */
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    margin-top: 0px;
+}
+
+.line-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px; /* Optional: space between lines and content */
+}
+
+.line {
+    flex: 1;
+    height: 1px;
+    background-color: #dadce0; /* or whatever color you want */
+}
+
+.host-container {
+    display: flex
+    ;
+        gap: 11px;
+        align-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+
+        img {
+            border-radius: 99px;
+            border: 2px solid grey;
+            height: 70px;
+        }
+}
+
+
+
+.event-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #0A2540; /* Gray-900 */
+}
+
+.event-detail {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    color: #1A1A1A9C; /* Gray-500 */
+    font-size: 16px;
+    font-weight: bold;
+}
+#selected-datetime-text {
+    white-space: break-spaces;
+    max-width: 20ch;
+}
+
+.event-detail svg {
+    margin-right: 12px;
+    stroke: #1A1A1A9C; /* Gray-500 */
+}
+
+.footer-links {
+    margin-top: auto; /* Pushes links to the bottom */
+    padding-top: 20px;
+}
+
+.footer-links a {
+    text-decoration: none;
+    font-size: 14px;
+    margin-right: 20px;
+    display: inline-block; /* Ensure margin works */
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+
+/* Right Panel */
+.right-panel {
+    width: fit-content;
+    padding: 67px;
+    /* position: relative; */
+    overflow: hidden;
+    display: flex
+;
+    justify-content: flex-start;
+    /* margin-right: 120px; */
+    gap: 30px;
+    padding-bottom: 0px;
+    padding-right: 30px;
+}
+
+.right-panel h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #111827; /* Gray-900 */
+}
+
+/* Calendar */
+.calendar-container {
+    margin-bottom: 24px;
+    display: flex;
+}
+
+.calendar-header {
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 20px;
+    display: flex;
+}
+
+#current-month-year {
+    font-size: 16px;
+}
+
+.month-nav {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #0069ff; /* Calendly Blue */
+}
+.month-nav svg {
+     stroke: currentColor;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.day-name {
+    font-size: 12px;;
+    color: #0A2540; /* Gray-500 */
+    padding-bottom: 8px;
+}
+
+.calendar-day {
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 15px;
+    color: #0069ff; /* Calendly Blue */
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.calendar-day:hover:not(:disabled) {
+    background-color: var(--primary-color-level3, rgba(0, 105, 255, 0.15)); /* Light Blue hover */
+}
+
+.calendar-day:not(:disabled) {
+    background-color:  #0069FF11 ; /* Light Blue hover */
+    color: #0060E6;
+    font-weight: bold;
+    font-family: 'Proxima Nova', sans-serif;
+}
+
+.calendar-day.disabled {
+    color: #7f868e; /* Gray-300 */
+    cursor: default;
+}
+
+#prev-month {
+        background-color: #0069FF11;
+        color: #0060E6;
+        font-weight: bold;
+        font-family: 'Proxima Nova', sans-serif;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    
+    #prev-month:hover {
+        background-color: var(--primary-color-level3, rgba(0, 105, 255, 0.15)); 
+}
+
+#next-month {
+    background-color: #0069FF11;
+    color: #0060E6;
+    font-weight: bold;
+    font-family: 'Proxima Nova', sans-serif;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#next-month:hover {
+    background-color: var(--primary-color-level3, rgba(0, 105, 255, 0.15)); 
+}
+
+.jWSwi_R_Xl7kPjUhuQoo {
+    position: relative;
+    top: 21px;
+    left: -11px;
+    z-index: 1;
+    display: block;
+    width: 160px;
+    padding: 9px 0 6px 0;
+    background-color: #505960;
+    color: #ffffff;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%);
+    font-weight: var(--fontWeightBold, 700);
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    pointer-events: auto;
+    transition: all 0.1s ease-in;
+    transform: rotate(45deg);
+}
+.V7YfvNqWv0XKYKys7N7K {
+    margin-left: -7px;
+    color: var(--color-grey-4, #F2F2F2);
+    font-size: 8px;
+    text-transform: uppercase;
+}
+
+.VJL48qbQzWENTFAh1Knk {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    overflow: hidden;
+    width: 105px;
+    height: 105px;
+    text-decoration: none;
+    pointer-events: none;
+    transition: all 0.1s ease-in;
+    will-change: transform;
+}
+
+.VJL48qbQzWENTFAh1Knk:hover {
+    transform: scale(1.04);
+}
+
+.HvybhIo63ZbBJxHh7Ann {
+    margin-left: -7px;
+    color: #ffffff;
+    font-size: var(--fontSizeSmall, 14px);
+}
+
+.calendar-day.selected {
+    background-color: #0069ff; /* Calendly Blue */
+    color: #fff;
+}
+
+.calendar-day.selected:hover {
+    background-color: #0069ff; /* Calendly Blue */
+    color: #fff;
+}
+
+/* Timezone */
+.timezone-selector {
+    display: flex;
+    align-items: center;
+    /* margin-bottom: 24px; */
+    font-size: 14px;
+    color: #374151; /* Gray-700 */
+}
+
+.timezone-selector svg {
+    margin-right: 8px;
+     stroke: #6b7280;
+}
+
+.timezone-selector span {
+    margin-right: 8px;
+}
+
+#timezone-select {
+    border: none;
+    background: none;
+    color: #0069ff; /* Calendly Blue */
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 15px; /* Space for potential custom arrow */
+    /* background-image: url('down-arrow.svg'); Add custom arrow later if needed */
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+/* Troubleshoot */
+.troubleshoot {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #6b7280; /* Gray-500 */
+    margin-top: 20px;
+}
+
+.troubleshoot button {
+    background: none;
+    border:1px solid #4a4c4e; /* Gray-300 */
+    border-radius: 99px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #374151; /* Gray-700 */
+    margin-right: 8px;
+
+    padding: 11px 16px;
+    font-size: 14px;
+}
+
+.troubleshoot button svg {
+    margin-right: 6px;
+    stroke: currentColor;
+}
+
+.troubleshoot > svg {
+    stroke: #6b7280;
+}
+
+
+/* Time Slot Selector */
+#time-slot-selector {
+    width: fit-content;
+    height: 100%;
+    background: white;
+    z-index: 1;
+    margin-left: 30px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease-in-out;
+    margin-right: 35px;
+}
+
+/* Responsive adjustments for time slot selector */
+@media (max-width: 992px) {
+    #time-slot-selector {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 20px;
+        padding: 0 15px;
+    }
+    
+    .right-panel {
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 15px;
+    }
+    
+    #date-time-selector, #time-slot-selector {
+        width: 100%;
+        max-width: 500px;
+    }
+    
+    .time-slots {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .time-slots {
+        grid-template-columns: 1fr;
+    }
+    
+    #time-slot-selector, #date-time-selector {
+        padding: 0 10px;
+    }
+}
+
+#time-slot-selector.slide-in {
+    transform: translateX(0);
+}
+
+/* Adjust the date-time-selector when time slots are shown */
+#date-time-selector.calendar-condensed {
+    width: fit-content;
+}
+
+#selected-date-heading {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #0A2540; /* Gray-900 */
+    font-weight: 400;
+}
+
+.time-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: fit-content; /* Increased height */
+    overflow-y: auto;
+}
+
+.time-slot-btn {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #7fb4ff; /* Calendly Blue */
+    border-radius: 4px;
+    background-color: #fff;
+    color: #0069ff;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, color 0.2s;
+    font-family: 'PROXIMA NOVA';
+    font-size: 15px;
+}
+
+.time-slot-btn:hover { /* Light Blue hover */
+    border: 1px solid #0069ff; 
+}
+
+.time-slot-btn.selected {
+    background-color: rgb(0 0 0 / 60%); /* Dark Gray for selected but not confirmed */
+    color: #fff;
+    border-color: #4b5563;
+    WIDTH: -webkit-fill-available;
+    font-size: 15px;
+}
+
+.time-slot-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.time-slot-confirm-btn {
+    /* padding: 12px 24px; */
+    padding: 14px;
+    border: none;
+    border-radius: 4px;
+    background-color: #0069ff; /* Calendly Blue */
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+    font-family: 'PROXIMA NOVA';
+    WIDTH: -webkit-fill-available;
+    font-size: 15px;
+}
+
+.time-slot-confirm-btn:hover {
+    background-color: #0052cc; /* Darker blue */
+}
+
+/* Details Form */
+#details-form {
+     /* Initially hidden, shown by JS */
+     position: relative; /* For back button positioning */
+     padding-left: 20px;
+
+}
+
+@media (max-width: 992px) {
+    .fb-login-container {
+        flex-direction: column !important;
+        padding: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        width: 73% !important;
+        padding-left: 0px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #text-code-label, #email-code-label {
+        display: block;
+        margin-bottom: 0;
+        margin-top: 0;
+        position: absolute;
+        top: 10px !important;
+        transform: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #auth-code-label {
+        display: block;
+        margin-bottom: 0;
+        margin-top: 0;
+        position: absolute;
+        top: 10px !important;
+        transform: none !important;
+    }
+}
+
+.back-nav {
+    background: none;
+    border: 1px solid #d1d5db;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 8px;
+    display: none; /* Initially hidden */
+    justify-content: center;
+    align-items: center;
+    color: #6b7280;
+    width: 42px;
+    height: 42px;
+}
+
+.back-nav:hover {
+    background-color: var(--primary-color-level3, rgba(0, 105, 255, 0.15));
+}
+
+.back-nav svg {
+    stroke: currentColor;
+}
+
+#booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 90%;
+}
+
+#booking-form label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0A2540; /* Gray-700 */
+    margin-bottom: -8px; /* Reduce space below label */
+    font-family: 'Proxima Nova';
+}
+
+#booking-form input[type="text"],
+#booking-form input[type="email"],
+#booking-form input[type="tel"],
+#booking-form textarea {
+    width: 100%; /* Account for padding */
+    padding: 14px;
+    border: 1px solid #a6bbd1; /* Gray-300 */
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: 'Proxima Nova';
+}
+
+#booking-form input:focus,
+#booking-form textarea:focus {
+    outline: none;
+    border-color: #0069ff; /* Calendly Blue */
+    box-shadow: 0 0 0 2px rgba(0, 105, 255, 0.2);
+}
+
+#booking-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+#phone {
+    border: 1px solid transparent !important; /* Gray-300 */
+}
+
+#phone:focus {
+    border: 0px; /* Gray-300 */
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Phone Input and Country Selector */
+.phone-input-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d5db; /* Gray-300 */
+    border-radius: 6px;
+    padding-left: 12px;
+    position: relative; /* Added for absolute positioning of popup */
+}
+
+@media (max-width: 992px) {
+    .aaaaa{
+        font-size: 23px !important;
+    }
+    .phone-input-container {
+        display: flex !important;
+                flex-direction: row !important;
+                align-content: center !important;
+                align-items: center !important;
+    }
+}
+@media (max-width: 992px) {
+    .country-flag-container {
+        margin-bottom: 0px !important;
+    }
+}
+
+.phone-input-container input[type="tel"] {
+    border: none;
+    flex-grow: 1;
+    padding: 12px 12px 12px 8px;
+    width: auto;
+}
+
+.phone-input-container input[type="tel"]:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.phone-input-container:focus-within {
+    border-color: #0069ff; /* Calendly Blue */
+    box-shadow: 0 0 0 2px rgba(0, 105, 255, 0.2);
+}
+
+.country-flag-container {
+      display: flex
+;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    /* padding: 4px 8px; */
+    border-radius: 4px;
+    /* min-width: 60px; */
+}
+
+.country-flag-container:hover {
+    background-color: #f3f4f6;
+}
+
+.country-flag-img {
+    width: 20px;
+    height: auto;
+    border-radius: 2px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.country-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.country-item:hover {
+    background-color: #f3f4f6;
+}
+
+.country-item.selected {
+    background-color: #0069ff11;
+}
+
+/* Ensure flag images in the list have appropriate spacing */
+.country-item .country-flag-img {
+    width: 24px;
+    margin-right: 8px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#selected-code {
+    font-size: 14px;
+    color: #4b5563;
+}
+
+.country-selector {
+    position: absolute;
+    top: 51px;
+    left: 0;
+    width: 300px;
+    max-height: 400px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    overflow: hidden;
+    display: none; /* Hidden by default */
+}
+
+.country-selector.active {
+    display: block;
+}
+
+.country-selector h3 {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 16px;
+    margin: 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.country-search {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.country-search input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.country-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.country-name {
+    flex-grow: 1;
+    font-size: 14px;
+}
+
+.country-code {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+#add-guests-btn {
+    background: none;
+    border: none;
+    color: #0069ff; /* Calendly Blue */
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    font-size: 14px;
+    margin-top: -8px; /* Adjust spacing */
+}
+
+.terms {
+    font-size: 14px;
+    color: #6b7280; /* Gray-500 */
+    margin-top: 8px;
+}
+
+.terms a {
+    color: #004EBA; /* Calendly Blue */
+    text-decoration: none;
+}
+
+.terms a:hover {
+    text-decoration: underline;
+}
+
+#schedule-event-btn {
+    padding: 14px 26px;
+    border: none;
+    border-radius: 99px; /* Pill shape */
+    background-color: #0069ff; /* Calendly Blue */
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 14px;
+    align-self: flex-start; /* Align button left */
+    font-family: 'Proxima Nova';    
+}
+
+#schedule-event-btn:hover {
+    background-color: #0052cc; /* Darker blue */
+}
+
+/* Powered by Calendly Banner */
+.powered-by {
+    position: absolute;
+    top: 0;
+    right: -40px;
+    background-color: #4b5563; /* Gray-600 */
+    color: #fff;
+    padding: 5px 30px 5px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    transform: rotate(45deg);
+    transform-origin: top right;
+    white-space: nowrap;
+    z-index: 10; /* Ensure it stays on top */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Adjustments (Optional) */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 95%;
+        max-width: 500px;
+    }
+
+    .left-panel, .right-panel {
+        width: auto;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .right-panel {
+        border-bottom: none;
+    }
+
+    /* Remove the specific adjustment for powered-by on small screens */
+    /* .powered-by {
+        right: -30px; 
+    } */
+}
+
+/* Make flags more visible in the list */
+.country-item .country-flag-img {
+    font-size: 22px;
+    min-width: 26px; /* Ensure consistent spacing */
+    text-align: center;
+}
+
+/* Highlight the currently selected flag */
+#selected-flag {
+    font-size: 20px;
+    margin-right: 4px;
+}
+
+/* Meta Authentication Popup Styles */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none !important; /* Add !important to override inline styles */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* This class will be applied via JavaScript to show the popup */
+.popup-overlay.show {
+    display: flex !important;
+}
+
+.popup-content {
+    background-color: #fff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: popup-fade-in 0.3s ease-out forwards;
+}
+
+@keyframes popup-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.popup-header h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 18px;
+    color: #0A2540;
+}
+
+.close-popup {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    display: none;
+    color: transparent;
+}
+
+.popup-body {
+    padding: 24px;
+}
+
+.auth-message {
+    margin-bottom: 24px;
+}
+
+.auth-message p {
+    margin: 8px 0;
+    font-size: 16px !important;
+}
+
+.security-note {
+    color: #4b5563;
+    font-size: 14px !important;
+}
+
+.data-collection-info {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.data-collection-info h4 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #0A2540;
+}
+
+.data-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.data-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.data-icon {
+    font-size: 24px;
+    background-color: #e0f2fe;
+    color: #0069ff;
+    width: 42px;
+    height: 42px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.data-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.data-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #0A2540;
+}
+
+.data-description {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.meta-auth-btn {
+    width: 100%;
+    display: flex
+;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background-color: #0069ff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 99px;
+    align-items: flex-end;
+
+}
+
+.meta-auth-btn:hover {
+    background-color: #0c64d3;
+}
+
+.google-auth-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background-color: #db4437;
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: not-allowed;
+    transition: background-color 0.2s;
+    align-items: center;
+    margin-top: 12px;
+    opacity: 0.6;
+}
+
+.google-auth-btn:hover {
+    background-color: #c23321;
+    cursor: not-allowed;
+}
+
+.meta-logo {
+    width: 20px;
+    height: 20px;
+}
+
+.google-logo {
+    width: 20px;
+    height: 20px;
+}
+
+.success-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.success-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #10b981;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+
+.done-btn {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #0069ff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.done-btn:hover {
+    background-color: #0052cc;
+}
+
+/* Browser Chrome Styling */
+.browser-window {
+    /* width: 100%; */
+    /* border: 1px solid #dadce0; */
+    border-radius: 8px;
+    /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+    overflow: hidden;
+    /* margin-bottom: 20px; */
+    height: -webkit-fill-available;
+    background-color: #f2f4f7;
+    /* display: flex
+; */
+
+}
+
+.browser-chrome {
+    background-color: #f1f3f4;
+    padding: 6px 8px;
+    border-bottom: 1px solid #dadce0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.browser-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.browser-tabs {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.browser-tab {
+    display: flex;
+    align-items: center;
+    background-color: #e8eaed;
+    border-radius: 8px 8px 0 0;
+    padding: 6px 12px;
+    font-size: 12px;
+    gap: 6px;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.browser-tab.active {
+    background-color: #fff;
+}
+
+.tab-favicon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #5f6368;
+}
+
+.browser-address-bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 4px 8px;
+    border: 1px solid #dadce0;
+    position: relative;
+    padding-right: 40px; /* Make space for the close button */
+}
+
+.browser-navigation {
+    display: flex;
+    gap: 4px;
+}
+
+.nav-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    padding: 5px;
+}
+
+.nav-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.url-bar-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.security-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.url-bar {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    color: #202124;
+    background: transparent;
+}
+
+.bookmark-icon {
+    color: #5f6368;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.bookmark-icon:hover {
+    color: #202124;
+}
+
+.browser-content {
+    background-color: #f2f4f7;
+    /* height: 500px; */
+    overflow: auto;
+    display: flex
+;
+    align-items: center;
+    height: -webkit-fill-available;
+}
+
+/* Popup styling */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none;
+}
+
+.popup {
+    background-color: white;
+    width: 400px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.popup-browser-chrome {
+    background-color: #f1f3f4;
+    padding: 12px 16px;
+    border-bottom: 1px solid #dadce0;
+}
+
+.popup-title {
+    font-weight: 500;
+    font-size: 14px;
+    color: #202124;
+}
+
+.popup-content {
+    padding: 16px;
+}
+
+.popup-message {
+    margin-bottom: 20px;
+}
+
+.popup-message p {
+    margin: 8px 0;
+    color: #202124;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+}
+
+.secondary-button {
+    background-color: #f1f3f4;
+    color: #5f6368;
+}
+
+.secondary-button:hover {
+    background-color: #e8eaed;
+}
+
+.primary-button {
+    background-color: #1877f2;
+    color: white;
+}
+
+.primary-button:hover {
+    background-color: #166fe5;
+}
+
+/* Facebook Login Popup Styles - Updated */
+.facebook-login {
+    width: 56%;
+    max-width: 95%;
+    padding: 0;
+    border-radius: 8px;
+    position: relative;
+    display: flex
+;
+    flex-direction: column;
+    overflow: hidden;
+    height: 74%;
+}
+
+.facebook-login .close-popup {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    z-index: 100;
+    /* background-color: white; */
+    color: #666;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    /* border: 1px solid #eaeaea; */
+    /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */
+}
+
+.fb-login-container {
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.fb-login-left {
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 40px;
+    width: 55%;
+}
+
+.fb-logo {
+    height: 106px;
+    margin-left: -28px;
+}
+
+.fb-tagline {
+    font-size: 28px;
+    font-weight: normal;
+    line-height: 1.3;
+    width: 100%;
+    color: #1c1e21;
+    margin-top: 0;
+}
+
+.fb-login-right {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 40%;
+    min-width: 320px;
+}
+
+.fb-login-form {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.fb-login-form input {
+    width: 100%;
+    padding: 18px 16px;
+    font-size: 17px;
+    border-radius: 6px;
+    border: 1px solid #dddfe2;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.fb-login-form input:focus {
+    outline: none;
+    border-color: #1877f2;
+    box-shadow: 0 0 0 2px #e7f3ff;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 992px) {
+    .fb-login-container {
+        flex-direction: column;
+        padding: 15px;
+        width: 100%;
+    }
+    
+    .fb-login-left, .fb-login-right {
+        width: 100%;
+        min-width: 0;
+    }
+    
+    .fb-login-left {
+        margin-bottom: 20px;
+        margin-right: 0;
+        text-align: center;
+    }
+    
+    .fb-tagline {
+        font-size: 22px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .fb-login-form {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .fb-login-container {
+        padding: 10px;
+    }
+    
+    .fb-tagline {
+        font-size: 18px;
+        line-height: 1.3;
+    }
+    
+    .fb-login-left img {
+        max-width: 120px;
+        margin: 0 auto;
+    }
+    
+    .fb-login-form {
+        padding: 15px;
+    }
+}
+
+.password-container {
+    position: relative;
+}
+
+.show-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.fb-login-btn {
+    width: 100%;
+    padding: 11px 16px;
+    background-color: #1877f2;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: background-color 0.3s;
+}
+
+.fb-login-btn:hover {
+    background-color: #166fe5;
+}
+
+.forgot-password {
+    display: block;
+    text-align: center;
+    margin: 16px 0;
+    color: #0866FF;
+    font-size: 16px;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.divider {
+    border-bottom: 1px solid #dadde1;
+    margin: 20px 0;
+}
+
+.create-account-btn {
+    width: fit-content;
+    margin: 0 auto;
+    padding: 14px 16px;
+    background-color: #42b72a;
+    color: #fff;
+    font-size: 17px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: block;
+}
+
+.create-account-btn:hover {
+    background-color: #36a420;
+}
+
+.create-page-text {
+    text-align: center;
+    font-size: 14px;
+    color: #1c1e21;
+    margin-top: 28px;
+}
+
+.create-page-text a {
+    color: #1c1e21;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.create-page-text a:hover {
+    text-decoration: underline;
+}
+
+.fb-success-message {
+    padding: 24px;
+    text-align: center;
+}
+
+/* Add styles for the URL display */
+.url-display {
+    flex: 1;
+    background-color: transparent;
+    padding: 4px 6px;
+    font-size: 13px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 40px); /* Ensure text doesn't go under close button */
+}
+
+.https-prefix {
+    color: #40C057;
+    font-weight: 500;
+}
+
+/* Two Factor Authentication Popup Styles */
+.two-factor-popup {
+    width: 480px;
+    max-width: 90%;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+    border-radius: 29px;
+    position: relative;
+    padding: 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+
+    display: flex
+    ;
+        height: 61%;
+        border-radius: 16px;
+}
+
+.close-popup-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.two-factor-content {
+    padding: 24px;
+}
+
+.two-factor-content h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1c1e21;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #65676b;
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+.verification-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    margin-bottom: 24px;
+}
+
+.verification-method {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #dddfe2;
+    cursor: pointer;
+    background-color: white;
+}
+
+.verification-method.selected {
+    border-color: #1877f2;
+    background-color: white;
+}
+
+.method-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.method-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000000;
+}
+
+.method-description {
+    font-size: 14px;
+    color: #878787
+}
+
+.method-radio {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #dddfe2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.verification-method.selected .method-radio {
+    border-color: #1877f2;
+}
+
+.radio-circle {
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background-color: #1877f2;
+    transition: all 0.2s;
+}
+
+.radio-circle.selected {
+    width: 12px;
+    height: 12px;
+}
+
+.recovery-info {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background-color: #f7f8fa;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.info-icon {
+    flex-shrink: 0;
+}
+
+.recovery-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.recovery-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: black;
+    margin: 0;
+}
+
+.recovery-description {
+    font-size: 14px;
+    color: #878787;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.recovery-description a {
+    color: #1877f2;
+    text-decoration: none;
+}
+
+.recovery-description a:hover {
+    text-decoration: underline;
+}
+
+.continue-btn {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 17px;
+    text-align: center;
+    background-color: #0c6ceb;
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.continue-btn:hover {
+    /* background-color: #0e57b7; */
+}
+
+@media (max-width: 500px) {
+    .two-factor-popup {
+        width: 100%;
+        max-width: 100%;
+        height: 61%;
+        border-radius: 16px;
+    }
+    
+    .two-factor-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .continue-btn {
+        margin-top: auto;
+    }
+}
+
+/* Verification Screens */
+.verification-screen {
+    text-align: center;
+}
+
+.verification-image {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.verification-image img {
+    max-width: 100%;
+    height: auto;
+    width: -webkit-fill-available;
+}
+
+.code-input-container {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.floating-label-input {
+    position: relative;
+    width: 100%;
+}
+
+.code-input {
+    width: 100%;
+    padding: 16px 12px 6px;
+    font-size: 16px;
+    border: 1px solid #dddfe2;
+    border-radius: 12px;
+    outline: none;
+    box-sizing: border-box;
+    height: 61px;
+}
+
+.code-input.error {
+    border-color: #e41e3f;
+}
+
+.floating-label-input label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #65676b;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    background: transparent;
+}
+
+.code-input:focus,
+.code-input:not(:placeholder-shown) {
+    border-color: #1877f2;
+    padding-top: 20px;
+    padding-bottom: 4px;
+}
+
+.code-input.error:focus,
+.code-input.error:not(:placeholder-shown) {
+    border-color: #e41e3f;
+}
+
+.code-input:focus + label,
+.code-input:not(:placeholder-shown) + label {
+    top: 25%;
+    font-size: 12px;
+    color: #1877f2;
+}
+
+.code-input.error:focus + label,
+.code-input.error:not(:placeholder-shown) + label {
+    color: #e41e3f;
+}
+
+.code-input::placeholder {
+    color: transparent;
+}
+
+.error-message {
+    color: #e41e3f;
+    font-size: 13px;
+    margin-top: 6px;
+    min-height: 20px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    animation: errorShake 0.4s ease-in-out;
+}
+
+@keyframes errorShake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.try-another-way-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    color: black;
+    background-color: white;
+    border: 1px solid #dadde1;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: 'Proxima Nova', sans-serif;
+}
+
+.try-another-way-btn:hover {
+    /* background-color: rgba(24, 119, 242, 0.05); */
+}
+
+.resend-code {
+    display: flex
+;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 20px;
+    color: #65676b;
+    font-size: 14px;
+}
+
+.resend-code svg {
+    flex-shrink: 0;
+}
+
+.timer {
+    color: #65676b;
+    font-weight: 600
+}
+
+.resend-link {
+    color: #1877f2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.resend-link:hover {
+    text-decoration: underline;
+}
+
+/* Add styles for disabled buttons */
+.continue-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #1877f2;
+}
+
+/* Animation for screen transitions */
+.verification-screen {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.verification-screen.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Spinner/Loader */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.spinner-only {
+    margin-right: 0;
+}
+
+.button-content {
+    /* display: inline-flex; */
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Hide text when loading */
+.is-loading .button-text {
+    display: none;
+}
+
+/* Button with loading state */
+.button.is-loading, 
+.continue-btn.is-loading,
+.fb-login-btn.is-loading {
+    pointer-events: none;
+}
+
+/* Add responsive styles at the end of the file */
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .left-panel, .right-panel {
+        width: 100%;
+        height: auto;
+        padding: 20px;
+        padding-right: 0px !important;
+    }
+
+    .left-panel {
+        padding-top: 40px;
+        position: relative;
+    }
+
+    .event-title {
+        font-size: 26px;
+    }
+
+    .back-nav {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+    }
+
+    .calendar-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .calendar-grid {
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .day-name, .day {
+        font-size: 12px;
+        height: 40px;
+    }
+    
+    /* Popup styles */
+    .popup-overlay {
+        padding: 0;
+    }
+    
+    .popup-content {
+        width: 95%;
+        max-width: 400px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .browser-window {
+        width: 100%;
+        height: auto;
+    }
+    
+    .browser-chrome {
+        padding: 8px;
+    }
+    
+    .browser-address-bar {
+        padding: 6px;
+    }
+
+    /* Login form adjustments */
+    .fb-login-container {
+        flex-direction: column;
+        padding: 15px;
+    }
+    
+    .fb-login-left, .fb-login-right {
+        width: 100%;
+    }
+    
+    .fb-login-left {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .fb-tagline {
+        font-size: 18px;
+    }
+    
+    .fb-login-form input {
+        padding: 12px;
+    }
+    
+    /* Two-factor authentication popup */
+    .two-factor-popup {
+        width: 95%;
+        max-width: 400px;
+        padding: 15px;
+    }
+    
+    .verification-methods {
+        gap: 2px;
+    }
+    
+    .verification-method {
+        padding: 12px;
+    }
+    
+    .verification-image img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .continue-btn {
+        width: 100%;
+    }
+    
+    .try-another-way-btn {
+        width: 100%;
+    }
+    
+    /* Time slot selector */
+    .time-slots {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Form adjustments */
+    .phone-input-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .country-flag-container {
+        margin-bottom: 10px;
+    }
+    
+    #booking-form input,
+    #booking-form textarea {
+        padding: 12px;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .event-title {
+        font-size: 22px;
+    }
+    
+    .day-name, .day {
+        font-size: 10px;
+        height: 36px;
+    }
+    
+    h2 {
+        font-size: 18px;
+    }
+    
+    .calendar-header {
+        padding: 8px 0;
+    }
+    
+    #current-month-year {
+        font-size: 16px !important;
+    }
+    
+    .verification-method {
+        padding: 10px;
+    }
+    
+    .method-title {
+        font-size: 14px;
+    }
+    
+    .method-description {
+        font-size: 12px;
+    }
+    
+    .recovery-info {
+        padding: 10px;
+    }
+    
+    .recovery-title {
+        font-size: 14px;
+    }
+    
+    .recovery-description {
+        font-size: 12px;
+    }
+    
+    .popup-content {
+        width: 100%;
+        border-radius: 0;
+    }
+    
+    .popup h2 {
+        font-size: 18px;
+    }
+    
+    .popup p {
+        font-size: 14px;
+    }
+    
+    .browser-window {
+        border-radius: 0;
+    }
+}
+
+/* Add these additional styles for better mobile responsiveness */
+
+/* Fix popup display on mobile */
+.popup {
+    max-width: 450px;
+    width: 95%;
+    box-sizing: border-box;
+}
+
+/* Two-factor specific improvements */
+.two-factor-content {
+    padding: 15px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.two-factor-content.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Fix input fields on mobile */
+input, textarea, select {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Additional mobile adjustments */
+@media (max-width: 768px) {
+    /* Enhance touch targets */
+    button, 
+    .continue-btn,
+    .verification-method,
+    .time-slot,
+    .day {
+        min-height: 44px; /* Apple's recommended minimum touch target size */
+        padding: 10px !important;
+        min-width: 44px;
+    }
+    
+    /* Make sure buttons are easily tappable */
+    .continue-btn,
+    .try-another-way-btn,
+    #schedule-event-btn {
+        padding: 12px 16px;
+        margin: 10px 0;
+    }
+    
+    /* Improve calendar layout */
+    .calendar-container {
+        margin-bottom: 20px;
+    }
+    
+    /* Fix any potential text overflow */
+    .event-title, .event-host, h1, h2, h3 {
+        word-break: break-word;
+    }
+    
+    /* Improve form usability */
+    label {
+        display: block;
+        margin-bottom: 8px;
+        margin-top: 15px;
+    }
+    
+    /* Fix popup positioning */
+    .popup-overlay {
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Make the popups full screen on very small devices */
+    @media (max-width: 480px) {
+        .popup,
+        .popup-content,
+        .two-factor-popup {
+            width: 100%;
+            margin: 0;
+            border-radius: 16px;
+        }
+        
+        .browser-window {
+            border-radius: 0;
+            box-shadow: none;
+        }
+        
+        /* Make login form more compact */
+        .fb-login-form {
+            padding: 15px;
+        }
+        
+        /* Adjust close button for easier tapping */
+        .close-popup, .close-popup-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            line-height: 40px;
+        }
+    }
+}
+
+/* Fix floating labels in responsive mode */
+@media (max-width: 768px) {
+    /* Common styles for both code input labels */
+    #text-code-label, #auth-code-label, #email-code-label {
+        position: absolute;
+        left: 12px;
+        font-size: 12px !important;
+        color: #65676b;
+        transition: all 0.2s ease;
+        pointer-events: none;
+        background: transparent;
+        top: 10px !important; /* Position at top consistently */
+        transform: none !important; /* Remove transform that was causing issues */
+    }
+    
+    /* Handle state when input is focused or has content */
+    .code-input:focus + label, 
+    .code-input:not(:placeholder-shown) + label {
+        top: 10px !important;
+        font-size: 12px !important;
+        color: #1877f2;
+    }
+    
+    /* Adjust code input padding to accommodate the new label position */
+    .code-input {
+        padding: 24px 12px 8px !important;
+        height: 56px;
+    }
+    
+    /* Handle error state */
+    .code-input.error:focus + label,
+    .code-input.error:not(:placeholder-shown) + label {
+        color: #e41e3f !important;
+    }
+    
+    /* Improve the floating label container */
+    .floating-label-input {
+        position: relative;
+        margin-bottom: 24px;
+    }
+    
+    /* Ensure error messages display properly */
+    .error-message {
+        display: block;
+        margin-top: 4px;
+        min-height: 18px;
+    }
+    
+    /* Make code inputs more touch-friendly */
+    .code-input {
+        font-size: 16px;
+        letter-spacing: 1px;
+    }
+}
+
+/* Add even more specific fixes for very small screens */
+@media (max-width: 480px) {
+    #text-code-label, #auth-code-label {
+        font-size: 11px !important;
+    }
+    
+    .code-input {
+        padding: 22px 12px 8px !important;
+        height: 52px;
+    }
+    
+    /* Make input containers more compact on small screens */
+    .code-input-container {
+        margin: 12px 0;
+    }
+
+}
+
+/* Additional Responsive Fixes for Facebook Popup */
+@media (max-width: 992px) {
+    /* Adjust Facebook login popup for medium screens */
+    .facebook-login {
+        width: 85%;
+        max-width: 600px;
+    }
+    
+    /* Improve browser window display */
+    .browser-window {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Adjust Facebook login popup for smaller screens */
+    .facebook-login {
+        width: 95%;
+        height: auto;
+        max-height: 90vh;
+    }
+    
+    /* Make close button more visible and easier to tap */
+    .facebook-login .close-popup {
+        top: 5px;
+        right: 5px;
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+        display: flex !important;
+        opacity: 1;
+        color: #555;
+    }
+    
+    /* Make browser chrome more compact */
+    .browser-chrome {
+        padding: 5px;
+    }
+    
+    /* Improve URL display */
+    .url-display {
+        font-size: 10px;
+    }
+    
+    /* Adjust browser address bar */
+    .browser-address-bar {
+        border-radius: 16px;
+        padding: 3px 30px 3px 6px;
+    }
+    
+    /* Make login form more usable on mobile */
+    .fb-login-form {
+        padding: 15px;
+    }
+    
+    .fb-login-form input {
+        padding: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Full-width popup on very small screens */
+    .facebook-login {
+        width: 100%;
+        /* height: 100%; */
+        max-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+    }
+    
+    /* Hide browser chrome details for cleaner look */
+    .browser-tabs, .browser-navigation {
+        display: none;
+    }
+    
+    /* Simplify browser chrome */
+    .browser-chrome {
+        padding: 3px;
+    }
+    
+    /* Improve Facebook content display */
+    .fb-login-container {
+        padding: 10px;
+    }
+    
+    /* Make close button even more accessible */
+    .facebook-login .close-popup {
+        top: -3px;
+        right: 3px;
+        width: 30px;
+        height: 30px;
+        /* background-color: rgba(255, 255, 255, 0.9); */
+    }
+    
+    /* Fix logo display on small screens */
+    .fb-login-left img {
+        max-width: 120px;
+    }
+} 

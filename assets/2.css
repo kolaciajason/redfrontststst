@@ -1,0 +1,39 @@
+.humanContainer {
+    align-items: center;
+  }
+    
+  .humanFormContainer {
+    position: relative;
+    border: 1px solid #bdbdbd;
+    border-radius: 0.5rem;
+  }
+  
+  /* .humanFormHeader {
+    @apply font-montserrat tracking-tighter;
+    font-size: 30px;
+    font-weight: 500;
+  } */
+  
+  .humanFormParagraph {
+    font-size: 15px;
+  }
+  
+  .headerMetaFont {
+    font-weight: 500;
+  }
+  
+  .sideMenuButton {
+    height: 64px;
+  }
+  
+  .sideMenuButton {
+    height: 64px;
+  }
+  
+  .headerMetaFont {
+    font-weight: 500;
+  }
+  
+  
+  /* cyrillic-ext */
+ 
